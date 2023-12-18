@@ -1,0 +1,54 @@
+<ion-app>
+  <ion-split-pane contentId="main-content">
+    <ion-menu contentId="main-content" type="overlay" side="end">
+      <ion-content>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320">
+          <path
+            fill="#1d4188"
+            fill-opacity="1"
+            d="M0,32L80,26.7C160,21,320,11,480,53.3C640,96,800,192,960,245.3C1120,299,1280,309,1360,314.7L1440,320L1440,0L1360,0C1280,0,1120,0,960,0C800,0,640,0,480,0C320,0,160,0,80,0L0,0Z"
+          ></path>
+        </svg>
+        <div class="user-section">
+          <h1>{{ user?.username }}</h1>
+          <p>{{ user?.email }}</p>
+        </div>
+        <ion-list id="inbox-list" lines="none">
+          <ion-menu-toggle
+            auto-hide="true"
+            *ngFor="let p of appPages; let i = index"
+          >
+            <ion-item
+              routerDirection="root"
+              [routerLink]="[p.url]"
+              lines="none"
+              detail="false"
+              routerLinkActive="selected"
+              class="side-menue-item"
+            >
+              <ion-icon
+                aria-hidden="true"
+                slot="start"
+                [ios]="p.icon + '-outline'"
+                [md]="p.icon + '-sharp'"
+              ></ion-icon>
+              <ion-label>{{ p.title }}</ion-label>
+            </ion-item>
+          </ion-menu-toggle>
+        </ion-list>
+      </ion-content>
+      <ion-footer>
+        <!-- logout button -->
+        <ion-button color="primary" (click)="logout()" expand="block">
+          تسجيل الخروج
+          <ion-icon
+            name="log-out-outline"
+            style="direction: ltr"
+            slot="start"
+          ></ion-icon>
+        </ion-button>
+      </ion-footer>
+    </ion-menu>
+    <ion-router-outlet id="main-content"></ion-router-outlet>
+  </ion-split-pane>
+</ion-app>

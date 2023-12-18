@@ -1,0 +1,400 @@
+<ion-header [translucent]="true" class="ion-no-border">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button></ion-back-button>
+    </ion-buttons>
+    <ion-buttons slot="end">
+      <ion-menu-toggle auto-hide="false" side="end">
+        <ion-button>
+          <ion-icon name="menu"></ion-icon>
+        </ion-button>
+      </ion-menu-toggle>
+    </ion-buttons>
+    <ion-title class="ion-text-center header-title-align"
+      >صافى الأرباح</ion-title
+    >
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="no-padding">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320">
+    <path
+      fill="#1d4188"
+      fill-opacity="1"
+      d="M0,256L60,218.7C120,181,240,107,360,85.3C480,64,600,96,720,138.7C840,181,960,235,1080,261.3C1200,288,1320,288,1380,288L1440,288L1440,0L1380,0C1320,0,1200,0,1080,0C960,0,840,0,720,0C600,0,480,0,360,0C240,0,120,0,60,0L0,0Z"
+    ></path>
+  </svg>
+  <ion-grid class="content-grid">
+    <ion-row>
+      <form [formGroup]="filterForm" class="width">
+        <ion-radio-group
+          id="type-of-items"
+          formControlName="itemName"
+          [allowEmptySelection]="false"
+          (ionChange)="onTypeOfItemChange($event)"
+        >
+          <ion-radio value="كافة الاصناف" labelPlacement="end"
+            ><h2>كافة الأصناف</h2></ion-radio
+          >
+          <ion-radio value="صنف واحد" labelPlacement="end"
+            ><h2>صنف واحد</h2></ion-radio
+          >
+        </ion-radio-group>
+      </form>
+    </ion-row>
+
+    <ion-row>
+      <ion-col
+        size="12"
+        *ngIf="filterForm.get('itemName')?.value !== 'كافة الاصناف'"
+      >
+        <div>
+          <mat-form-field class="width">
+            <input
+              matInput
+              placeholder="اسم الصنف"
+              aria-label="اسم الصنف"
+              [matAutocomplete]="auto"
+              [formControl]="itemsNamesCtrl"
+              required
+              [(ngModel)]="searchItemName"
+            />
+            <mat-error *ngIf="itemsNamesCtrl.hasError"
+              >اسم الصنف مطلوب</mat-error
+            >
+            <mat-autocomplete
+              #auto="matAutocomplete"
+              (optionSelected)="onItemSelected($event)"
+            >
+              <cdk-virtual-scroll-viewport itemSize="20" class="viewport">
+                <mat-option
+                  class="vscr-item"
+                  *cdkVirtualFor="let customer of filterdItemsNames | async"
+                  [value]="customer.value"
+                >
+                  <span>{{ customer.value}}</span>
+                </mat-option>
+              </cdk-virtual-scroll-viewport>
+            </mat-autocomplete>
+          </mat-form-field>
+        </div>
+      </ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col>
+        <ion-button id="open-modal">
+          <ion-icon name="filter-outline"></ion-icon>
+        </ion-button>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+
+  <div class="table-wrapper">
+    <ion-grid
+      class="table"
+      [ngStyle]="{'height': filterForm.get('itemName')?.value !== 'كافة الاصناف' ? 'calc(100vh - 462px)' : 'calc(100vh - 310px)'}"
+    >
+      <ion-row class="table-header">
+        <ion-col style="min-width: 90px;">
+          <span>التاريخ</span>
+        </ion-col>
+        <ion-col>
+          <span>المستند</span>
+        </ion-col>
+        <ion-col>
+          <span>نوع المستند</span>
+        </ion-col>
+        <ion-col>
+          <span>رقم.ف</span>
+        </ion-col>
+        <ion-col>
+          <span>رقم العميل</span>
+        </ion-col>
+        <ion-col>
+          <span>العميل</span>
+        </ion-col>
+        <ion-col>
+          <span>مجموعة الصنف</span>
+        </ion-col>
+        <ion-col>
+          <span>رقم الصنف</span>
+        </ion-col>
+        <ion-col style="min-width: 200px;">
+          <span>الصنف</span>
+        </ion-col>
+        <ion-col>
+          <span>الوحدة</span>
+        </ion-col>
+        <ion-col>
+          <span>الكمية</span>
+        </ion-col>
+        <ion-col>
+          <span>البونص</span>
+        </ion-col>
+        <ion-col>
+          <span>تكلفة الوحدة</span>
+        </ion-col>
+        <ion-col>
+          <span>اجمالي التكلفة</span>
+        </ion-col>
+        <ion-col>
+          <span>بيع الوحدة</span>
+        </ion-col>
+        <ion-col>
+          <span>اجمالي البيع</span>
+        </ion-col>
+        <ion-col>
+          <span>الخصم</span>
+        </ion-col>
+      </ion-row>
+      <app-spinner *ngIf="loading"></app-spinner>
+      <ion-row class="table-row" *ngFor="let report of salesProfitReport">
+        <ion-col style="min-width: 90px;">
+          <span>{{ report.theDate | date:'MM/dd/yyyy' }}</span>
+        </ion-col>
+        <ion-col>
+          <span>{{ report.documentName }}</span>
+        </ion-col>
+        <ion-col>
+          <span>{{ report.documentType }}</span>
+        </ion-col>
+        <ion-col>
+          <span>{{ report.recordNumber }}</span>
+        </ion-col>
+        <ion-col>
+          <span>{{ report.clientNumber }}</span>
+        </ion-col>
+        <ion-col>
+          <span>{{ report.clientName }}</span>
+        </ion-col>
+        <ion-col>
+          <span>{{ report.categoryName }}</span>
+        </ion-col>
+        <ion-col>
+          <span>{{ report.itemNumber }}</span>
+        </ion-col>
+        <ion-col style="min-width: 200px;">
+          <span>{{ report.itemName }}</span>
+        </ion-col>
+        <ion-col>
+          <span>{{ report.unitName }}</span>
+        </ion-col>
+        <ion-col>
+          <span>{{ report.saleQuantity }}</span>
+        </ion-col>
+        <ion-col>
+          <span>{{ report.bonus | number: '1.2-2'}}</span>
+        </ion-col>
+        <ion-col>
+          <span>{{ report.unitCost | number: '1.2-2'}}</span>
+        </ion-col>
+        <ion-col>
+          <span>{{ report.allCostPrice | number: '1.2-2'}}</span>
+        </ion-col>
+        <ion-col>
+          <span>{{ report.unitPrice | number: '1.2-2' }}</span>
+        </ion-col>
+        <ion-col>
+          <span>{{ report.totalSellPrice | number: '1.2-2'}}</span>
+        </ion-col>
+        <ion-col>
+          <span>{{ report.totalSellDiscount | number: '1.2-2'}}</span>
+        </ion-col>
+      </ion-row>
+      <ion-row class="table-footer">
+        <ion-col style="min-width: 90px;">
+          <span>الاجمالى</span>
+        </ion-col>
+        <ion-col> </ion-col>
+        <ion-col> </ion-col>
+        <ion-col> </ion-col>
+        <ion-col> </ion-col>
+        <ion-col> </ion-col>
+        <ion-col> </ion-col>
+        <ion-col> </ion-col>
+        <ion-col style="min-width: 200px;"> </ion-col>
+        <ion-col> </ion-col>
+        <ion-col> </ion-col>
+        <ion-col>
+          <span>{{ totalBonus | number:'1.2-2' }}</span>
+        </ion-col>
+        <ion-col>
+          <span>{{ totalUnitCost | number:'1.2-2' }}</span>
+        </ion-col>
+        <ion-col>
+          <span>{{ totalAllCostPrice | number:'1.2-2' }}</span>
+        </ion-col>
+        <ion-col>
+          <span>{{ totalUnitPrice | number:'1.2-2' }}</span>
+        </ion-col>
+        <ion-col>
+          <span>{{ totalSellPrice | number:'1.2-2' }}</span>
+        </ion-col>
+        <ion-col>
+          <span>{{ totalSellDiscount | number:'1.2-2' }}</span>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  </div>
+  
+  <ion-modal
+    #modal
+    trigger="open-modal"
+    [initialBreakpoint]="1"
+    [breakpoints]="[0, 0.5, 0.75, 1]"
+  >
+    <ng-template>
+      <ion-content class="no-padding">
+        <form [formGroup]="filterForm" (ngSubmit)="filterReport()">
+          <div class="options-section">
+            <h2>العملاء</h2>
+            <div class="form">
+              <mat-form-field class="width">
+                <input
+                  matInput
+                  placeholder="اسم العميل"
+                  aria-label="اسم العميل"
+                  [matAutocomplete]="customerAuto"
+                  [formControl]="customerNameCtrl"
+                  required
+                />
+                <mat-error *ngIf="customerNameCtrl.hasError('required')"
+                  >العميل مطلوب</mat-error
+                >
+                <mat-autocomplete #customerAuto="matAutocomplete">
+                  <mat-option
+                    *ngFor="let customer of filteredCustomerName | async"
+                    [value]="customer.value"
+                  >
+                    <span>{{ customer.key }} | {{ customer.value }}</span>
+                  </mat-option>
+                </mat-autocomplete>
+              </mat-form-field>
+            </div>
+          </div>
+          <div class="options-section">
+            <h2>كود المورد</h2>
+            <mat-form-field class="width">
+              <mat-label>ادخل كود المورد</mat-label>
+              <input
+                matInput
+                placeholder="كود المورد"
+                formControlName="supplierID"
+                name="supplierID"
+                type="number"
+              />
+              <mat-error
+                *ngIf="filterForm.get('supplierID')?.hasError('required')"
+                >كود المورد مطلوب</mat-error
+              >
+            </mat-form-field>
+          </div>
+          <div class="options-section">
+            <h2>كود الصنف</h2>
+            <mat-form-field class="width">
+              <input
+                matInput
+                placeholder="كود الصنف"
+                formControlName="categoryID"
+                name="categoryID"
+                type="number"
+              />
+            </mat-form-field>
+            <mat-error
+              *ngIf="filterForm.get('categoryID')?.hasError('required')"
+              >كود الصنف مطلوب</mat-error
+            >
+          </div>
+          <div class="options-section">
+            <h2>مركز التكلفة</h2>
+            <mat-form-field class="width">
+              <input
+                matInput
+                placeholder="اسم المركز"
+                aria-label="اسم المركز"
+                [matAutocomplete]="costCenterAuto"
+                [formControl]="costCenterCtrl"
+                required
+              />
+              <mat-error *ngIf="costCenterCtrl.hasError('required')"
+                >اسم المركز مطلوب</mat-error
+              >
+              <mat-autocomplete #costCenterAuto="matAutocomplete">
+                <mat-option
+                  *ngFor="let costCenter of filterdCostCenters | async"
+                  [value]="costCenter.accountName"
+                >
+                  <span
+                    >{{ costCenter.accountNumber }} | {{ costCenter.accountName
+                    }}</span
+                  >
+                </mat-option>
+              </mat-autocomplete>
+            </mat-form-field>
+          </div>
+          <div class="options-section">
+            <h2>نوع التقرير</h2>
+            <div class="report-options">
+              <ion-radio-group
+                formControlName="typeOfReport"
+                [allowEmptySelection]="false"
+                id="type-of-report"
+              >
+                <ion-radio value="تفصيلي">
+                  <h3>تفصيلى</h3>
+                </ion-radio>
+                <ion-radio value="تجميع بالمستند">
+                  <h3>تجميع بالمستند</h3>
+                </ion-radio>
+                <ion-radio value="تجميع بالصنف">
+                  <h3>تجميع بالصنف</h3>
+                </ion-radio>
+                <ion-radio value="تجميع بالعميل">
+                  <h3>تجميع بالعميل</h3>
+                </ion-radio>
+              </ion-radio-group>
+            </div>
+          </div>
+          <div class="options-section">
+            <h2>الفترة</h2>
+            <app-select-chips
+              [selectOptions]="dateOptions"
+              (selectedOption)="setDateOption($event)"
+            ></app-select-chips>
+            <div class="date-container">
+              <div *ngIf="time === 'خلال فترة'">
+                <label for="start-date"><h2>من</h2></label>
+                <div class="date-picker">
+                  <input
+                    type="date"
+                    id="start-date"
+                    name="trip-end"
+                    formControlName="minTimeValue"
+                  />
+                  <ion-icon name="calendar" slot="icon-only"></ion-icon>
+                </div>
+              </div>
+              <div>
+                <label for="end-date"><h2>إلى</h2></label>
+                <div class="date-picker">
+                  <input
+                    type="date"
+                    id="end-date"
+                    name="trip-end"
+                    formControlName="maxTimeValue"
+                  />
+                  <ion-icon name="calendar" slot="icon-only"></ion-icon>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="submit-button-container">
+            <ion-button color="primary" size="large" shape="round" type="submit"
+              >تطبيق</ion-button
+            >
+          </div>
+        </form>
+      </ion-content>
+    </ng-template>
+  </ion-modal>
+</ion-content>

@@ -1,0 +1,208 @@
+<ion-header [translucent]="true" class="ion-no-border">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button></ion-back-button>
+    </ion-buttons>
+    <ion-buttons slot="end">
+      <ion-menu-toggle auto-hide="false" side="end">
+        <ion-button>
+          <ion-icon name="menu"></ion-icon>
+        </ion-button>
+      </ion-menu-toggle>
+    </ion-buttons>
+    <ion-title class="ion-text-center header-title-align"
+      >ميزان المراجعة</ion-title
+    >
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320">
+    <path
+      fill="#1d4188"
+      fill-opacity="1"
+      d="M0,256L60,218.7C120,181,240,107,360,85.3C480,64,600,96,720,138.7C840,181,960,235,1080,261.3C1200,288,1320,288,1380,288L1440,288L1440,0L1380,0C1320,0,1200,0,1080,0C960,0,840,0,720,0C600,0,480,0,360,0C240,0,120,0,60,0L0,0Z"
+    ></path>
+  </svg>
+  <ion-grid class="ion-no-padding">
+    <ion-row>
+      <ion-col>
+        <ion-button id="open-modal">
+          <ion-icon name="filter-outline"></ion-icon>
+        </ion-button>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+
+  <div class="table-wrapper">
+    <ion-grid class="table">
+      <ion-row class="table-header">
+        <ion-col size="3">
+          <span>اسم الحساب</span>
+        </ion-col>
+        <ion-col size="1">
+          <span>الرقم</span>
+        </ion-col>
+        <ion-col size="2">
+          <span>رصيد أول فترة</span>
+          <div class="split-cell">
+            <span>دائن</span>
+            <span>مدين</span>
+          </div>
+        </ion-col>
+        <ion-col size="3">
+          <span>حركة الفترة</span>
+          <div class="split-cell">
+            <span>دائن</span>
+            <span>مدين</span>
+          </div>
+        </ion-col>
+        <ion-col size="3">
+          <span>رصيد اخر فترة</span>
+          <div class="split-cell">
+            <span>دائن</span>
+            <span>مدين</span>
+          </div>
+        </ion-col>
+      </ion-row>
+      <app-spinner *ngIf="loading"></app-spinner>
+      <ion-row class="table-row" *ngFor="let account of trialBalanceReport">
+        <ion-col size="3">
+          <span>{{ account.accountName }}</span>
+        </ion-col>
+        <ion-col size="1">
+          <span>{{ account.accountNumber }}</span>
+        </ion-col>
+        <ion-col size="2">
+          <div class="split-cell" style="direction: ltr">
+            <span>{{ account.dain | number:'1.2-2' }}</span>
+            <span>{{ account.md1| number:'1.2-2' }}</span>
+          </div>
+        </ion-col>
+        <ion-col size="3">
+          <div class="split-cell" style="direction: ltr">
+            <span>{{ account.dain2 | number:'1.2-2' }}</span>
+            <span>{{account.md2 | number: '1.2-2' }}</span>
+          </div>
+        </ion-col>
+        <ion-col size="3">
+          <div class="split-cell" style="direction: ltr">
+            <span>{{ account.dain3 | number:'1.2-2' }}</span>
+            <span>{{ account.md3 | number:'1.2-2' }}</span>
+          </div>
+        </ion-col>
+      </ion-row>
+      <ion-row class="table-footer">
+        <ion-col size="3">
+          <span>Total</span>
+        </ion-col>
+        <ion-col size="1"></ion-col>
+        <ion-col size="2">
+          <div class="split-cell" style="direction: ltr">
+            <span>{{ totalDain | number:'1.2-2' }}</span>
+            <span>{{ totalMd1 | number:'1.2-2' }}</span>
+          </div>
+        </ion-col>
+        <ion-col size="3">
+          <div class="split-cell" style="direction: ltr">
+            <span>{{ totalDain2 | number:'1.2-2' }}</span>
+            <span>{{ totalMd2 | number:'1.2-2' }}</span>
+          </div>
+        </ion-col>
+        <ion-col size="3">
+          <div class="split-cell" style="direction: ltr">
+            <span>{{ totalDain3 | number:'1.2-2' }}</span>
+            <span>{{ totalMd3 | number:'1.2-2' }}</span>
+          </div>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  </div>
+
+</ion-content>
+
+<ion-modal
+  #modal
+  trigger="open-modal"
+  [initialBreakpoint]="1"
+  [breakpoints]="[0, 0.75, 1]"
+>
+  <ng-template>
+    <ion-content class="no-padding">
+      <form [formGroup]="filterForm" (ngSubmit)="filterReport()">
+        <div class="options-section">
+          <h2>المستوى</h2>
+          <mat-form-field class="width">
+            <input
+              matInput
+              placeholder="المستوى"
+              type="text"
+              name="level"
+              formControlName="level"
+              required
+              [matAutocomplete]="auto"
+            />
+            <mat-error *ngIf="filterForm.get('level')?.hasError('required')"
+              >المستوى مطلوب</mat-error
+            >
+            <mat-error *ngIf="filterForm.get('level')?.hasError('required')"
+              >المستوى مطلوب</mat-error
+            >
+            <mat-autocomplete #auto="matAutocomplete">
+              <mat-option
+                *ngFor="let level of levels"
+                [value]="allLevels[level]"
+                >{{ allLevels[level]}}</mat-option
+              >
+            </mat-autocomplete>
+          </mat-form-field>
+        </div>
+        <div class="options-section">
+          <h2>الفترة</h2>
+          <app-select-chips
+            [selectOptions]="dateOptions"
+            (selectedOption)="setDateOption($event)"
+          ></app-select-chips>
+          <div class="date-container">
+            <div *ngIf="time === 'خلال فترة'">
+              <label for="start-date"><h2>من</h2></label>
+              <div class="date-picker">
+                <input
+                  type="date"
+                  id="start-date"
+                  name="trip-end"
+                  formControlName="minTimeValue"
+                />
+                <ion-icon name="calendar" slot="icon-only"></ion-icon>
+              </div>
+            </div>
+            <div>
+              <label for="end-date"><h2>إلى</h2></label>
+              <div class="date-picker">
+                <input
+                  type="date"
+                  id="end-date"
+                  name="trip-end"
+                  formControlName="maxTimeValue"
+                />
+                <ion-icon name="calendar" slot="icon-only"></ion-icon>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="options-section">
+          <div class="report-options">
+            <ion-toggle formControlName="isBeforeRelay"
+              ><h2>قبل الترحيل</h2></ion-toggle
+            ><br />
+          </div>
+        </div>
+        <div class="submit-button-container">
+          <ion-button color="primary" size="large" shape="round" type="submit"
+            >تطبيق</ion-button
+          >
+        </div>
+      </form>
+    </ion-content>
+  </ng-template>
+</ion-modal>

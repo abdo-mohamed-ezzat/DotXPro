@@ -1,0 +1,144 @@
+ion-header {
+  height: 71px;
+  background-color: #1d4188;
+  --background: #1d4188;
+
+  ion-toolbar {
+    height: 100%;
+    --background: #1d4188;
+    color: #ffff;
+    border-bottom-left-radius: 15px;
+    border-bottom-right-radius: 15px;
+  }
+  ion-title {
+    font-weight: bold;
+    font-size: 20px;
+  }
+}
+
+.form {
+  min-width: 150px;
+  max-width: 500px;
+  width: 100%;
+  direction: rtl;
+}
+
+.width {
+  width: 100%;
+  margin-top: -5px;
+}
+
+.split-cell {
+  display: flex;
+  justify-content: space-between;
+  padding-right: 10px;
+  padding-left: 10px;
+}
+.table-wrapper {
+  overflow: auto;
+  height: calc(100vh - 211px);
+  direction: rtl;
+  padding: 0;
+  border: 0;
+  margin: 0;
+  ion-grid.table {
+    min-width: 850px;
+    ion-col {
+      span {
+      }
+    }
+    ion-row.table-header {
+      text-align: center;
+      background-color: rgb(83 114 191);
+      position: sticky;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 9999;
+      color: #fff;
+      ion-col  {
+        border-right: white 1px solid;
+        span{
+        font-weight: bold;
+        }
+      }
+      .split-cell {
+        border-top: 2px solid white;
+      }
+    }
+    ion-row:not(.table-header) {
+      border-bottom: 1px solid #ccc;
+    }
+    ion-row.table-row {
+      text-align: center;
+    }
+    ion-row:not(.table-header):nth-child(odd) {
+      background-color: #e2e8ff;
+    }
+    .table-footer {
+      text-align: center;
+      direction: rtl;
+      background-color: rgb(83, 114, 191) !important;
+      color: #fff;
+      ion-col {
+        text-align: center;
+        span {
+        }
+      }
+    }
+  }
+}
+
+.options-section {
+  direction: rtl;
+  padding: 15px;
+  h2 {
+    font-weight: 600;
+  }
+  app-select-chip {
+    margin-top: 20px;
+  }
+}
+.date-container {
+  .date-picker {
+    position: relative;
+  }
+
+  .date-picker input[type="date"] {
+    background: white;
+    outline: none;
+    border-color: #ccc;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+  }
+
+  .date-picker ion-icon {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #ccc;
+  }
+}
+
+ion-toggle {
+  width: 100%;
+}
+
+ion-modal {
+  --max-height: 75%;
+  --border-radius: 15px;
+}
+.submit-button-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  ion-button[type="submit"] {
+    min-width: 80%;
+    position: absolute;
+    bottom: 0;
+    margin: 10px;
+  }
+}

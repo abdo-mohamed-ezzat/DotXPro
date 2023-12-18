@@ -1,0 +1,19 @@
+ion-select {
+    border: 1px solid rgb(185, 182, 182);
+    border-radius: 15px;
+    padding-left: 15px;
+    padding-right: 15px;
+  }
+  
+  ion-select:focus {
+    border-color: var(--ion-color-primary);
+  }
+  
+  ion-select:not(:focus) {
+    border-color: rgb(185, 182, 182);
+  }
+  
+  ion-select::part(icon) {
+    margin-left: 45px;
+    opacity: 1;
+  }

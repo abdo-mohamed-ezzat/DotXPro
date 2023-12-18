@@ -1,0 +1,96 @@
+<ion-content [fullscreen]="true">
+
+  <div class="container">
+    <h1 class="heading">مرحبا👋<br /><br /></h1>
+    <p class="para">سجل الدخول للمتابعة</p>
+    <form [formGroup]="loginForm" (ngSubmit)="login()">
+      <ion-item lines="none" class="ion-item">
+        <fieldset class="input-item">
+          <legend>اسم المستخدم</legend>
+          <ion-input formControlName="userName" type="text"></ion-input>
+        </fieldset>
+        <div>
+          <ion-text color="danger" *ngIf="submitted && f['userName'].errors">
+            <small *ngIf="f['userName'].errors['required']"
+              >ادخل اسم المستخدم</small
+            >
+          </ion-text>
+        </div>
+      </ion-item>
+      <ion-item lines="none" class="ion-item">
+        <fieldset class="input-item pass">
+          <legend>كلمة السر</legend>
+          <ion-input
+            formControlName="password"
+            [type]="showPassword ? 'text' : 'password'"
+            placeholder="**********"
+          ></ion-input>
+          <ion-icon
+          slot="end"
+          name="eye-outline"
+          *ngIf="!showPassword"
+          (click)="showPassword = !showPassword"
+        ></ion-icon>
+        <ion-icon
+        slot="end"
+        name="eye-off-outline"
+        *ngIf="showPassword"
+        (click)="showPassword = !showPassword"
+      ></ion-icon>
+        </fieldset>
+      </ion-item> 
+      <ion-text color="danger" *ngIf="submitted && f['password'].errors">
+        <small *ngIf="f['password'].errors['required']"
+          >ادخل الرقم السري</small
+        >
+      </ion-text>
+      <div class="date-and-branch">
+        <ion-item class="ion-item date" lines="none">
+          <fieldset class="input-item">
+            <legend>السنة المالية</legend>
+            <ion-select
+              aria-label="السنة المالية"
+              interface="action-sheet"
+              placeholder="السنة المالية"
+              formControlName="theYear"
+            >
+              <ion-select-option *ngFor="let year of years" [value]="year.value"
+                >{{year.value}}</ion-select-option>
+            </ion-select>
+            <ion-text color="danger" *ngIf="submitted && f['theYear'].errors">
+              <small *ngIf="f['theYear'].errors['required']"
+                >اختر السنة</small
+              >
+            </ion-text>
+          </fieldset>
+        </ion-item>
+        <ion-item lines="none" class="ion-item branch">
+          <fieldset class="input-item">
+            <legend>رقم الفرع</legend>
+            <ion-input type="text" formControlName="branchID"></ion-input>
+          </fieldset>
+          <ion-text color="danger" *ngIf="submitted && f['branchID'].errors">
+            <small *ngIf="f['branchID'].errors['required']"
+              >ادخل رقم الفرع</small
+            >
+          </ion-text>
+        </ion-item>
+      </div>
+      <div style="text-align: center">
+        <ion-text color="danger" *ngIf="error">
+          كملة السر او اسم المستخدم غير صحيح
+        </ion-text>
+      </div>
+
+      <ion-button
+        class="login-button"
+        expand="block"
+        type="submit"
+        [disabled]="loading || !loginForm.valid"
+      >
+        تسجيل الدخول</ion-button
+      >
+    </form>
+  </div>
+  <app-spinner *ngIf="loading"></app-spinner>
+</ion-content>

@@ -1,0 +1,30 @@
+<div class="date-container" no-lines>
+  <div *ngIf="timeType === 'خلال فترة'">
+    <label for="start-date"><h2>من</h2></label>
+    <div class="date-picker">
+      <input
+        type="date"
+        id="start-date"
+        name="trip-end"
+        placeholder="Select an start date"
+        [(ngModel)]="formatedFromDate"
+        (ngModelChange)="fromDateEmit.emit($event)"
+      />
+      <ion-icon name="calendar" slot="icon-only"></ion-icon>
+    </div>
+  </div>
+  <div>
+    <label for="end-date"><h2>إلى</h2></label>
+    <div class="date-picker">
+      <input
+        type="date"
+        id="end-date"
+        name="trip-end"
+        placeholder="Select an end date"
+        [(ngModel)]="formatedToDate"
+        (ngModelChange)="toDateEmit.emit($event)"
+
+      />
+      <ion-icon name="calendar" slot="icon-only"></ion-icon>
+    </div>
+  </div>
