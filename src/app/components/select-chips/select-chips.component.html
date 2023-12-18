@@ -1,0 +1,10 @@
+<div>
+  <ion-chip
+    *ngFor="let option of selectOptions"
+    [class.clicked]="option.clicked"
+    [outline]="true"
+    (click)="onChipClick(option.id)"
+    #chip
+    >{{ option.name }}</ion-chip
+  >
+</div>

@@ -1,0 +1,20 @@
+ion-chip {
+    border: 1px solid #ccc;
+    font-size: 20px;
+    padding-right: 20px;
+    padding-left: 20px;
+    padding-bottom: 10px;
+    padding-top: 10px;
+    background-color: #ffffff;
+    margin: 5px;
+}
+
+.clicked {
+    background: linear-gradient(to left, #2a4088, #3a418a, #47418b, #53428c, #5e428d);
+    color: white;
+}
+.selected {
+    /* Your styles for selected chips */
+    background: linear-gradient(to left, #2a4088, #3a418a, #47418b, #53428c, #5e428d);
+    color: white;
+  }

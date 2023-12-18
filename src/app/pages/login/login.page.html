@@ -1,0 +1,77 @@
+<ion-content [fullscreen]="true">
+  <app-alert></app-alert>
+  <!-- Login Page -->
+  <div class="container">
+    <h1 class="heading">مرحبا👋<br /><br /></h1>
+    <p class="para">سجل الدخول للمتابعة</p>
+    <form [formGroup]="loginForm" (ngSubmit)="login()">
+      <ion-item lines="none" class="ion-item">
+        <fieldset class="input-item">
+          <legend>اسم المستخدم</legend>
+          <ion-input formControlName="userName" type="text"></ion-input>
+        </fieldset>
+        <div>
+          <ion-text color="danger" *ngIf="submitted && f['userName'].errors">
+            <small *ngIf="f['userName'].errors['required']"
+              >Branch ID is required</small
+            >
+          </ion-text>
+        </div>
+      </ion-item>
+      <ion-item lines="none" class="ion-item">
+        <fieldset class="input-item">
+          <legend>كلمةالسر</legend>
+          <ion-input
+            formControlName="password"
+            type="password"
+            placeholder="*******"
+          ></ion-input>
+        </fieldset>
+        <ion-text color="danger" *ngIf="submitted && f['password'].errors">
+          <small *ngIf="f['password'].errors['required']"
+            >password is required</small
+          >
+        </ion-text>
+      </ion-item>
+      <div class="date-and-branch">
+        <ion-item lines="none" class="ion-item date">
+          <fieldset class="input-item">
+            <legend>السنة المالية</legend>
+            <ion-input type="date" formControlName="theYear"></ion-input>
+          </fieldset>
+          <ion-text color="danger" *ngIf="submitted && f['theYear'].errors">
+            <small *ngIf="f['theYear'].errors['required']"
+              >theYear is required</small
+            >
+          </ion-text>
+        </ion-item>
+        <ion-item lines="none" class="ion-item branch">
+          <fieldset class="input-item">
+            <legend>رقم الفرع</legend>
+            <ion-input type="text" formControlName="branchID"></ion-input>
+          </fieldset>
+          <ion-text color="danger" *ngIf="submitted && f['branchID'].errors">
+            <small *ngIf="f['branchID'].errors['required']"
+              >branchID is required</small
+            >
+          </ion-text>
+        </ion-item>
+      </div>
+      <div style="text-align: center;">
+        <ion-text color="danger" *ngIf="error">
+          كملة السر او اسم المستخدم غير صحيح
+        </ion-text>
+      </div>
+
+      <ion-button
+        class="login-button"
+        expand="block"
+        type="submit"
+        [disabled]="loading"
+      >
+        تسجيل الدخول</ion-button
+      >
+    </form>
+  </div>
+  <app-spinner *ngIf="loading"></app-spinner>
+</ion-content>

@@ -1,0 +1,14 @@
+<ion-item lines="none">
+  <ion-select
+    cancelText="الغاء"
+    okText="تم"
+    placeholder={{placeholder}}
+    [value] ="placeholder"
+    (ionChange)="handleChange($event)"
+    (ionCancel)="handleCancel()"
+    (ionDismiss)="handleDismiss()"
+    [multiple]="false"
+  >
+    <ion-select-option *ngFor="let option of options" [value]="option">{{option}}</ion-select-option>
+  </ion-select>
+</ion-item>

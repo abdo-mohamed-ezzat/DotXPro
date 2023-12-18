@@ -1,0 +1,102 @@
+ion-header {
+  height: 140px;
+  background-color: #ecf1f7;
+
+  ion-toolbar {
+    height: 100%;
+    --background: #1d4188;
+    color: #ffff;
+  }
+  ion-title {
+    font-weight: bold;
+    font-size: 20px;
+  }
+}
+
+ion-content {
+  --background: #ecf1f7; // Added missing semicolon
+
+  ion-grid {
+    position: fixed;
+    margin-top: -40px;
+    padding: 10px;
+    z-index: 9999;
+    left: 0;
+    right: 0;
+    ion-row {
+      background: #ffff;
+      margin-bottom: 20px;
+      border-radius: 10px;
+      ion-col {
+        .card {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          direction: rtl;
+          padding-left: 10px;
+          .card-title {
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            gap: 20px;
+            direction: ltr;
+
+            h2 {
+              font-size: 20px;
+              font-weight: bold;
+            }
+
+            img {
+              width: 45px;
+              height: 45px;
+              border-radius: 50%;
+              margin-right: 10px;
+            }
+          }
+          ion-icon {
+            font-size: 20px;
+            color: #adbcce;
+          }
+        }
+      }
+    }
+  }
+}
+
+svg {
+  position: fixed;
+  bottom: 0;
+}
+ion-modal#account-option-modal {
+  --width: fit-content;
+  --min-width: 350px;
+  --height: fit-content;
+  --border-radius: 6px;
+  --box-shadow: 0 28px 48px rgba(0, 0, 0, 0.4);
+
+  ion-radio-group {
+    display: flex;
+    justify-content: space-around;
+  }
+}
+
+ion-modal#account-option-modal h1 {
+  margin: 20px 20px 10px 20px;
+}
+
+ion-modal#account-option-modal .wrapper {
+  padding: 15px;
+  margin: 0;
+  direction: rtl;
+}
+
+.button-group {
+  margin-top: 20px;
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+  width: 100%;
+  ion-button:first-child {
+    margin-right: 10px;
+  }
+}

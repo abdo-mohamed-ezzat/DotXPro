@@ -1,0 +1,22 @@
+.date-container {
+    .date-picker {
+      position: relative;
+    }
+  
+    .date-picker input[type="date"] {
+      background: white;
+      outline: none;
+      border-color: #ccc;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 10px;
+    }
+  
+    .date-picker ion-icon {
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #ccc;
+    }
+  }
