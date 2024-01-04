@@ -34,7 +34,7 @@ export class HomePage implements OnInit {
       icon: 'assets/home-images/1.gif',
     },
     {
-      title: 'الميزانيه العموميه',
+      title: 'ميزان المراجعة',
       url: '/trial-balance',
       icon: 'assets/home-images/8.gif',
     },

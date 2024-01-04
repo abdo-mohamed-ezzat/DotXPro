@@ -22,7 +22,12 @@
     margin-top: -12px;
   }
 }
-
+.year {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding-bottom: 0;
+}
 .date-and-branch {
   display: flex;
   justify-content: space-between;
@@ -70,14 +75,13 @@ ion-select:host(.select-justify-space-between) .select-wrapper {
 legend {
   font-size: 17px;
   font-weight: bold;
-  color: #1d4188 ;
+  color: #1d4188;
 }
 .date-and-branch {
   .date {
     width: 48%;
     .input-item {
-
-      ion-select{
+      ion-select {
         margin-bottom: 20px;
       }
     }

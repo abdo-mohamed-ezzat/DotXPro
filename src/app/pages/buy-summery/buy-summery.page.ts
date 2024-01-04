@@ -272,13 +272,19 @@ export class BuySummeryPage implements OnInit {
     if (this.itemType == 'كافة الاصناف') {
       this.filterForm.get('itemName')?.setValue('كافة الاصناف');
     }
+
     this.modal.dismiss();
     this.loading = true;
+    this.totalBuy = 0;
+    this.totalRedone = 0;
+    this.totalNet = 0;
+    this.totalMcNet = 0;
+    this.totalNetTaxValue = 0;
     this.buySummeryRequest = {
       TypeOfReport: this.filterForm.get('typeOfReport')?.value,
       ItemName: this.filterForm.get('itemName')?.value,
       SupplierID: supplierID,
-      TheMethodName: this.filterForm.get('theMethodName')?.value,
+      TheMethodName: this.paymentTypeCtrl.value,
       CategoryID: categoryID,
       IsRedoneConnectedToBuy: this.filterForm.get('isRedoneConnectedToBuy')
         ?.value,
@@ -286,6 +292,7 @@ export class BuySummeryPage implements OnInit {
       MinTimeValue: this.filterForm.get('minTimeValue')?.value,
       MaxTimeValue: this.filterForm.get('maxTimeValue')?.value,
     };
+
     this.apiService.getBuySummeryReport(this.buySummeryRequest).subscribe({
       next: (res) => {
         this.buySummeryReport = res;

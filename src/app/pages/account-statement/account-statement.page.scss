@@ -39,28 +39,7 @@ ion-content{
 .viewport {
   height: 140px;
 }
-ion-radio-group {
-  margin-top: 20px;
-  display: flex;
-  flex-direction: row;
-  width: 100%;
-  border: 1px solid #ccc;
-  padding: 0px 10px;
-  justify-content: space-between;
-  border-radius: 10px;
-  box-shadow: 1px 0px 2px 1px rgba(47, 30, 145, 0.25);
 
-  ion-radio::part(container) {
-    border-radius: 5px;
-    border: 2px solid #ddd;
-  }
-  ion-radio::part(mark) {
-    border-radius: 5px;
-  }
-  ion-radio {
-    font-weight: 400;
-  }
-}
 
 .options-section {
   direction: rtl;

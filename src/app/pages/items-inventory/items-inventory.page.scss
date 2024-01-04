@@ -56,6 +56,7 @@ ion-header {
       background-color: #e2e8ff;
     }
     .table-footer {
+      margin-top: 1px;
       text-align: center;
       direction: rtl;
       background-color: rgb(83, 114, 191) !important;
@@ -70,26 +71,9 @@ ion-header {
   }
 }
 
-ion-radio-group {
-  display: flex;
-  flex-direction: row;
-  width: 100%;
-  border: 1px solid #ccc;
-  padding: 0px 10px;
-  justify-content: space-between;
-  border-radius: 10px;
-  box-shadow: 1px 0px 2px 1px rgba(47, 30, 145, 0.25);
 
-  ion-radio::part(container) {
-    border-radius: 5px;
-    border: 2px solid #ddd;
-  }
-  ion-radio::part(mark) {
-    border-radius: 5px;
-  }
-  ion-radio {
-    font-weight: 400;
-  }
+ion-radio-group#type-of-items {
+  margin: 0;
 }
 
 .form {
@@ -101,7 +85,7 @@ ion-radio-group {
 
 .width {
   width: 100%;
-  margin-top: 15px;
+  margin-top: -10px;
 }
 
 .vscr-item {

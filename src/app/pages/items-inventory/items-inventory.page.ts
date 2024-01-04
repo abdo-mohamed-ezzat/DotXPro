@@ -22,17 +22,18 @@ export class ItemsInventoryPage implements OnInit {
   inventoryOptions!: IChipOption[];
   timeOptinos!: IChipOption[];
   storeOptions!: IChipOption[];
+  private subscriptions: Subscription[] = [];
   loading!: boolean;
   stores!: IStore[];
-  private subscriptions: Subscription[] = [];
   totalStockQuantity = 0;
   totalStockUnitCost = 0;
   totalStockTotalCost = 0;
+
   //delcare request properties
   itemsInverntoryReport!: IStockInverntoryReport[];
   itemsInventoryRequest!: IStockInventoryRequest;
 
-  //declare request properties
+
   itemName!: string;
   storesNames!: string[];
   filterForm!: FormGroup;
@@ -41,6 +42,7 @@ export class ItemsInventoryPage implements OnInit {
   items!: Iitem[];
   filteredItems!: Observable<Iitem[]>;
   itemsCtrl!: FormControl;
+
   @ViewChild('modal') modal!: IonModal;
 
   constructor(
@@ -48,6 +50,7 @@ export class ItemsInventoryPage implements OnInit {
     private modalController: ModalController,
     private timeSerivce: TimeService
   ) {
+    
     //intialize filter form
     this.itemName = 'كافة الاصناف';
     this.filterForm = new FormGroup({
@@ -58,14 +61,17 @@ export class ItemsInventoryPage implements OnInit {
         this.timeSerivce.getCurrentDate(),
         Validators.required
       ),
-      storesNames: new FormControl(['المخزن الرئيسي']),
+      storesNames: new FormControl(['كافة المخازن']),
     });
 
     //initialize page properties
     this.timeOptinos = [{ id: 2, name: 'حتى يوم', clicked: true }];
-    this.storeOptions = [{ id: 0, name: 'المخزن الرئيسي', clicked: true }];
+    this.storeOptions = [
+      { id: -1, name: 'كافة المخازن', clicked: true },
+      { id: 0, name: 'المخزن الرئيسي', clicked: false },
+    ];
     this.loading = false;
-    this.storesNames = ['المخزن الرئيسي'];
+    this.storesNames = ['كافة المخازن'];
 
     //initialize lists properties
     this.items = [];
@@ -141,8 +147,12 @@ export class ItemsInventoryPage implements OnInit {
     if (this.filterForm.invalid) {
       return;
     }
+
     this.modalController.dismiss();
     this.loading = true;
+    this.totalStockQuantity = 0;
+    this.totalStockUnitCost = 0;
+    this.totalStockTotalCost = 0;
     this.itemsInverntoryReport = [];
     this.itemsInventoryRequest = {
       StoreName: this.filterForm.get('storesNames')?.value,
@@ -151,7 +161,7 @@ export class ItemsInventoryPage implements OnInit {
       IsBeforeRelay: this.filterForm.get('isBeforeRelay')?.value,
       TheMaxDate: this.filterForm.get('theMaxDate')?.value,
     };
-    console.log(this.filterForm.value);
+
     if (this.filterForm.get('isBeforeRelay')?.value) {
       this.subscriptions.push(
         this.apiService

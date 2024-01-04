@@ -33,27 +33,23 @@ export class AccountStatementPage implements OnInit {
   dateOptions!: IChipOption[];
   accountsTypeOptions!: IChipOption[];
   currencyOptions!: IChipOption[];
-  costCentersOptions!: IChipOption[];
-  layoutOptions!: IChipOption[];
 
   accounts!: IAccount[];
   filteredAccounts!: Observable<IAccount[]>;
   accountCtrl!: FormControl;
-  searchAccountName!: string;
 
   costCenters!: ICostCenter[];
   filteredCostCenters!: Observable<ICostCenter[]>;
   costCentersCtrl!: FormControl;
-  searchCostCenterName!: string;
 
   // declare request properties
   isBeforeRelay!: boolean;
   typeOfReport!: string;
-  currency!: string;
-  costCenter!: string;
+  // currency!: string;
+  // costCenter!: string;
   time!: string;
-  minTimeValue!: string;
-  maxTimeValue!: string;
+  // minTimeValue!: string;
+  // maxTimeValue!: string;
 
   // declare form
   filterForm!: FormGroup;
@@ -82,30 +78,17 @@ export class AccountStatementPage implements OnInit {
     });
 
     // intialize filter options
-    this.layoutOptions = [
-      { id: 1, name: 'قبل الترحيل', clicked: true },
-      { id: 2, name: 'بعد الترحيل', clicked: false },
-    ];
+
     this.dateOptions = [
       { id: 1, name: 'خلال فترة', clicked: false },
       { id: 2, name: 'حتى يوم', clicked: true },
-    ];
-    this.accountsTypeOptions = [
-      {
-        id: 1,
-        name: 'كشف كافة الحسابات',
-        clicked: true,
-      },
     ];
     this.currencyOptions = [
       { id: 1, name: 'كافة العملات', clicked: true },
       { id: 2, name: 'ريال سعودي', clicked: false },
       { id: 3, name: 'جنيه مصري', clicked: false },
     ];
-    this.costCentersOptions = [
-      { id: 1, name: 'كافة المراكز', clicked: true },
-      { id: 2, name: 'المركز الرئيسى', clicked: false },
-    ];
+
     this.loading = false;
     //lists controllers
     this.accounts = [];
@@ -120,7 +103,7 @@ export class AccountStatementPage implements OnInit {
     this.costCenters = [];
     this.costCentersCtrl = new FormControl('كافة المراكز', Validators.required);
     this.filteredCostCenters = this.costCentersCtrl.valueChanges.pipe(
-      startWith('كافة المراكز'),
+      startWith(''),
       map((costCenter) => {
         return costCenter
           ? this.filterCostCenters(costCenter)
@@ -141,6 +124,9 @@ export class AccountStatementPage implements OnInit {
     this.apiService.getAllCostCenters().subscribe((res) => {
       this.costCenters = res;
     });
+    this.filterForm.get('minTimeValue')?.valueChanges.subscribe(value => {
+      console.log('minTimeValue changed:', value);
+    });
   }
 
   ngAfterViewInit() {
@@ -151,10 +137,6 @@ export class AccountStatementPage implements OnInit {
   setDateOption(option: IChipOption) {
     this.filterForm.get('time')?.setValue(option.name);
     this.time = option.name;
-  }
-  setRelayoption(option: IChipOption) {
-    this.isBeforeRelay = option.name === 'قبل الترحيل' ? true : false;
-    this.filterForm.get('isBeforeRelay')?.setValue(this.isBeforeRelay);
   }
 
   setCurrenyValueOption(option: IChipOption) {
@@ -221,7 +203,7 @@ export class AccountStatementPage implements OnInit {
       TypeOfReport:
         this.filterForm.get('typeOfReport')?.value || this.accountCtrl.value,
       Currency: this.filterForm.get('currency')?.value,
-      CostCenter: this.filterForm.get('costCenter')?.value,
+      CostCenter: this.costCentersCtrl.value,
       Time: this.filterForm.get('time')?.value,
       MinTimeValue: this.filterForm.get('minTimeValue')?.value,
       MaxTimeValue: this.filterForm.get('maxTimeValue')?.value,

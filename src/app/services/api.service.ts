@@ -213,4 +213,19 @@ export class APIService {
     const endpoint = 'CommonLists/GetAllYears';
     return this.apiCall(endpoint);
   }
+  checkToken(): Observable<boolean> {
+    return this.http.get<IAPIResponse<any>>(`${environment.APIURL}/Administration/Auth/CheckToken`).pipe(
+      map((res) => {
+        if (res.success) {
+          return true;
+        } else {
+          return false;
+        }
+      }),
+      catchError((error) => {
+        console.error('Error checking token:', error);
+        return of(false); // Always return false if the request fails
+      })
+    );
+  }
 }

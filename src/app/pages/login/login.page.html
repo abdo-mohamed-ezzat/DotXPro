@@ -1,5 +1,4 @@
 <ion-content [fullscreen]="true">
-
   <div class="container">
     <h1 class="heading">مرحبا👋<br /><br /></h1>
     <p class="para">سجل الدخول للمتابعة</p>
@@ -26,27 +25,25 @@
             placeholder="**********"
           ></ion-input>
           <ion-icon
-          slot="end"
-          name="eye-outline"
-          *ngIf="!showPassword"
-          (click)="showPassword = !showPassword"
-        ></ion-icon>
-        <ion-icon
-        slot="end"
-        name="eye-off-outline"
-        *ngIf="showPassword"
-        (click)="showPassword = !showPassword"
-      ></ion-icon>
+            slot="end"
+            name="eye-outline"
+            *ngIf="!showPassword"
+            (click)="showPassword = !showPassword"
+          ></ion-icon>
+          <ion-icon
+            slot="end"
+            name="eye-off-outline"
+            *ngIf="showPassword"
+            (click)="showPassword = !showPassword"
+          ></ion-icon>
         </fieldset>
-      </ion-item> 
+      </ion-item>
       <ion-text color="danger" *ngIf="submitted && f['password'].errors">
-        <small *ngIf="f['password'].errors['required']"
-          >ادخل الرقم السري</small
-        >
+        <small *ngIf="f['password'].errors['required']">ادخل الرقم السري</small>
       </ion-text>
       <div class="date-and-branch">
         <ion-item class="ion-item date" lines="none">
-          <fieldset class="input-item">
+          <fieldset class="input-item year">
             <legend>السنة المالية</legend>
             <ion-select
               aria-label="السنة المالية"
@@ -55,12 +52,11 @@
               formControlName="theYear"
             >
               <ion-select-option *ngFor="let year of years" [value]="year.value"
-                >{{year.value}}</ion-select-option>
+                >{{year.value}}</ion-select-option
+              >
             </ion-select>
             <ion-text color="danger" *ngIf="submitted && f['theYear'].errors">
-              <small *ngIf="f['theYear'].errors['required']"
-                >اختر السنة</small
-              >
+              <small *ngIf="f['theYear'].errors['required']">اختر السنة</small>
             </ion-text>
           </fieldset>
         </ion-item>

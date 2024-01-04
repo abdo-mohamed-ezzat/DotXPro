@@ -16,17 +16,10 @@ ion-header {
   }
 }
 
-
-
-ion-radio-group {
+ion-radio-group#type-of-report {
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   width: 100%;
-  border: 1px solid #ccc;
-  padding: 0px 10px;
-  justify-content: space-between;
-  border-radius: 10px;
-  box-shadow: 1px 0px 2px 1px rgba(47, 30, 145, 0.25);
 
   ion-radio::part(container) {
     border-radius: 5px;
@@ -37,6 +30,11 @@ ion-radio-group {
   }
   ion-radio {
     font-weight: 400;
+  }
+  h3 {
+    color: #888484;
+    font-size: 20px;
+    font-weight: 600;
   }
 }
 
@@ -90,6 +88,7 @@ ion-radio-group {
       background-color: #e2e8ff;
     }
     .table-footer {
+      margin-top: 1px;
       text-align: center;
       direction: rtl;
       background-color: rgb(83, 114, 191) !important;

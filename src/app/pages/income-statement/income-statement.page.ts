@@ -98,6 +98,8 @@ export class IncomeStatementPage implements OnInit {
     if (this.filterForm.invalid) return;
     this.modalController.dismiss();
     this.loading = true;
+    this.totalMadeen = 0;
+    this.totalDain = 0;
     this.incomeStatementRequest = {
       Level: Number(this.allLevels[this.filterForm.get('level')?.value]),
       Time: this.filterForm.get('time')?.value,

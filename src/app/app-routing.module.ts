@@ -81,11 +81,6 @@ const routes: Routes = [
       canActivate: [AuthGuard],
   },
   { path: '**', redirectTo: '' },
-  {
-    path: 'splash',
-    loadChildren: () =>
-      import('./pages/splash/splash.module').then((m) => m.SplashPageModule),
-  },
 ];
 
 @NgModule({

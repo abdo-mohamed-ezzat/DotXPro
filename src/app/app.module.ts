@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { APP_INITIALIZER, NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouteReuseStrategy } from '@angular/router';
 import { IonicModule, IonicRouteStrategy } from '@ionic/angular';
@@ -9,17 +9,14 @@ import { TableComponentModule } from './components/table/table.module';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { DatePipe } from '@angular/common';
 
-import {
-  HTTP_INTERCEPTORS,
-} from '@angular/common/http';
-import { RetryInterceptor } from './Interceptors/retry.interceptor';
+import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { ErrorInterceptor } from './Interceptors/error.interceptor';
 import { JWTInterceptor } from './Interceptors/jwt.interceptor';
 import { AlertModule } from './components/alert/alert.module';
+import { AppInitService } from './services/app-init.service';
 
 @NgModule({
-  declarations: [AppComponent
-    ],
+  declarations: [AppComponent],
   imports: [
     BrowserModule,
     IonicModule.forRoot(),
@@ -27,28 +24,28 @@ import { AlertModule } from './components/alert/alert.module';
     TableComponentModule,
     BrowserAnimationsModule,
     ScrollingModule,
-    AlertModule
+    AlertModule,
   ],
   providers: [
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
-    
     DatePipe,
-    // {
-    //   provide: HTTP_INTERCEPTORS,
-    //   useClass: RetryInterceptor,
-    //   multi: true,
-    // },
-        {
+    {
       provide: HTTP_INTERCEPTORS,
       useClass: ErrorInterceptor,
       multi: true,
     },
-        {
+    {
       provide: HTTP_INTERCEPTORS,
       useClass: JWTInterceptor,
       multi: true,
     },
-
+    {
+      provide: APP_INITIALIZER,
+      useFactory: (appInitService: AppInitService) => () =>
+        appInitService.init(),
+      deps: [AppInitService],
+      multi: true,
+    },
   ],
   bootstrap: [AppComponent],
 })
