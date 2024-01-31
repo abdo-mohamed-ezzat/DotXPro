@@ -1,6 +1,8 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
+import { ICategory } from '@app/viewModels/icategory';
+import { ISupplier } from '@app/viewModels/isupplier';
 import { IonModal, ModalController } from '@ionic/angular';
 import {
   Observable,
@@ -63,6 +65,15 @@ export class SalesProfitPage implements OnInit {
   filterdCostCenters!: Observable<ICostCenter[]>;
   costCenterCtrl!: FormControl;
 
+
+  suplliers!: ISupplier[];
+  filteredSuppliers!: Observable<ISupplier[]>;
+  suppliersCtrl!: FormControl;
+
+  categories!: ICategory[];
+  filteredCategories!: Observable<ICategory[]>;
+  categoriesCtrl!: FormControl;
+  
   constructor(
     private apiService: APIService,
     private timeService: TimeService,
@@ -144,7 +155,35 @@ export class SalesProfitPage implements OnInit {
     );
   }
 
-  ngOnInit() {}
+  ngOnInit() {
+    this.apiService.getCustomerNames().subscribe((res) => {
+      this.suplliers = res;
+    });
+    this.suppliersCtrl = new FormControl('كافة الموردين', Validators.required);
+    this.filteredSuppliers = this.suppliersCtrl.valueChanges.pipe(
+      map((supplier) => {
+        return supplier
+          ? this.filterSuppliers(supplier)
+          : this.suplliers.slice();
+      })
+    );
+
+    //filter categories
+    this.apiService.getAllCategories().subscribe((res) => {
+      this.categories = res;
+    });
+    this.categoriesCtrl = new FormControl(
+      'كافة المجموعات',
+      Validators.required
+    );
+    this.filteredCategories = this.categoriesCtrl.valueChanges.pipe(
+      map((category) => {
+        return category
+          ? this.filterCategories(category)
+          : this.categories.slice();
+      })
+    );
+  }
 
   ngAfterViewInit() {
     this.loading = true;
@@ -155,6 +194,22 @@ export class SalesProfitPage implements OnInit {
   }
 
   // filters methods
+  filterCategories(name: string): ICategory[] {
+    let res = this.categories.filter(
+      (category) =>
+        category.value.toLowerCase().indexOf(name.toLowerCase()) === 0
+    );
+    return res;
+  }
+  filterSuppliers(name: string): ISupplier[] {
+    let res = this.suplliers.filter(
+      (supplier) =>
+        supplier.value.toLowerCase().indexOf(name.toLowerCase()) === 0
+    );
+
+    return res;
+  }
+
   filterItemsNames(name: string): Observable<Iitem[]> {
     const filterValue = name.toLowerCase();
     return this.apiService
@@ -204,28 +259,42 @@ export class SalesProfitPage implements OnInit {
 
   //apply filters
   filterReport() {
+    let supplierValue = this.suppliersCtrl.value;
+    let matchingSupplier = this.suplliers.find(
+      (supplier) => supplier.value === supplierValue
+    );
+    let supplierID = matchingSupplier ? matchingSupplier.key : 0;
+    let categoryValue = this.categoriesCtrl.value;
+    let matchingCategory = this.categories.find(
+      (category) => category.value === categoryValue
+    );
+    let categoryID = matchingCategory ? matchingCategory.key : 0;
     if (
       this.filterForm.invalid ||
       this.customerNameCtrl.invalid ||
-      this.costCenterCtrl.invalid
+      this.costCenterCtrl.invalid ||
+      this.suppliersCtrl.invalid ||
+      this.categoriesCtrl.invalid
     ) {
       return;
     }
-    // if (this.itemsNamesCtrl.invalid && this.filterForm.get('itemName')?.value === 'كافة الاصناف') {
-    //   this.modalController.dismiss();
-    //   this.itemsNamesCtrl.setErrors({ required: true });
-    //   return;
-    // }
     this.loading = true;
-
+    this.totalSaleQuantity = 0;
+    this.totalBonus = 0;
+    this.totalUnitCost = 0;
+    this.totalAllCostPrice = 0;
+    this.totalUnitPrice = 0;
+    this.totalSellPrice = 0;
+    this.totalSellDiscount = 0;
+    
     this.salesProfitRequest = {
       TypeOfReport: this.filterForm.get('typeOfReport')?.value,
       ItemName: this.filterForm.get('itemName')?.value,
       Time: this.filterForm.get('time')?.value,
       MinTimeValue: this.filterForm.get('minTimeValue')?.value,
       MaxTimeValue: this.filterForm.get('maxTimeValue')?.value,
-      SupplierID: this.filterForm.get('supplierID')?.value,
-      CategoryID: this.filterForm.get('categoryID')?.value,
+      SupplierID: supplierID,
+      CategoryID: categoryID,
       ClientName: this.customerNameCtrl.value,
       CostCenterName: this.costCenterCtrl.value,
     };

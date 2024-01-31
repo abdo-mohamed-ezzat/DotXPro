@@ -26,7 +26,7 @@
   </svg>
   <ion-grid class="content-grid">
     <ion-row>
-      <ion-radio-group
+      <ion-radio-group id="type-of-items"
         [(ngModel)]="typeOfReport"
         [allowEmptySelection]="false"
         (ionChange)="onTypeOfReportChange($event)"
@@ -304,6 +304,7 @@
                   [matAutocomplete]="costCenterAuto"
                   [formControl]="costCentersCtrl"
                   required
+                  autoActiveFirstOption
                 />
                 <mat-error *ngIf="costCentersCtrl.invalid">
                   اسم المركز مطلوب

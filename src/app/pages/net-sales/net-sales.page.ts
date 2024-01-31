@@ -190,7 +190,12 @@ export class NetSalesPage {
 
     this.modalcontroller.dismiss();
     this.loading = true;
-
+    this.totalWithTax = 0;
+    this.totalSales = 0;
+    this.totalReturns = 0;
+    this.totalTax = 0;
+    this.totalNetSales = 0;
+    this.totalLocalNetSales = 0;
     this.reportRequest = {
       TypeOfReport: this.filterForm.get('typeOfReport')?.value,
       ItemName: this.itemsNamesCtrl.value || 'كافة الاصناف',

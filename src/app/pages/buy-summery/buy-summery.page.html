@@ -26,7 +26,7 @@
   </svg>
   <ion-grid class="content-grid">
     <ion-row>
-      <ion-radio-group
+      <ion-radio-group id="type-of-items"
         [allowEmptySelection]="false"
         [(ngModel)]="itemType"
         (ionChange)="onTypeOfItemChange($event)"
@@ -167,6 +167,7 @@
                 type="text"
                 [formControl]="categoriesCtrl"
                 [matAutocomplete]="categoryAuto"
+                required
               />
               <mat-error *ngIf="categoriesCtrl.hasError('required')"
                 >الرجاء ادخال الصنف</mat-error
@@ -213,6 +214,7 @@
             <h2>نوع التقرير</h2>
             <div class="report-options">
               <ion-radio-group
+              id="type-of-report"
                 formControlName="typeOfReport"
                 [allowEmptySelection]="false"
               >

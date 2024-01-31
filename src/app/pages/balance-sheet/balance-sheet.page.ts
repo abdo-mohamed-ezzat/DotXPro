@@ -82,6 +82,8 @@ export class BalanceSheetPage implements OnInit {
     if (this.filterForm.invalid) {
       return;
     }
+    this.totalDain = 0;
+    this.totalMadeen = 0;
     this.modalController.dismiss();
     this.loading = true;
     this.balanceSheetRequest = {

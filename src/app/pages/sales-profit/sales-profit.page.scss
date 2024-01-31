@@ -15,33 +15,8 @@ ion-header {
     font-size: 20px;
   }
 }
-
-ion-grid {
-  ion-row:first-child {
-    margin-bottom: 20px;
-  }
-}
-
-ion-radio-group#type-of-items {
-  display: flex;
-  flex-direction: row;
-  width: 100%;
-  border: 1px solid #ccc;
-  padding: 0px 10px;
-  justify-content: space-between;
-  border-radius: 10px;
-  box-shadow: 1px 0px 2px 1px rgba(47, 30, 145, 0.25);
-
-  ion-radio::part(container) {
-    border-radius: 5px;
-    border: 2px solid #ddd;
-  }
-  ion-radio::part(mark) {
-    border-radius: 5px;
-  }
-  ion-radio {
-    font-weight: 400;
-  }
+ion-grid.content-grid ion-row:nth-child(2){
+  margin: 10px 5px;
 }
 
 ion-radio-group#type-of-report {
@@ -59,7 +34,11 @@ ion-radio-group#type-of-report {
   ion-radio {
     font-weight: 400;
   }
-
+  h3 {
+    color: #888484;
+    font-size: 20px;
+    font-weight: 600;
+  }
 }
 
 .width {
@@ -81,7 +60,7 @@ ion-radio-group#type-of-report {
   border: 0;
   margin: 0;
   ion-grid.table {
-    min-width: 1200px;
+    // min-width: 1200px;
     ion-col {
       span {
       }
@@ -112,6 +91,8 @@ ion-radio-group#type-of-report {
       background-color: #e2e8ff;
     }
     .table-footer {
+      margin-top: 1px;
+      margin-top: 0;
       text-align: center;
       direction: rtl;
       background-color: rgb(83, 114, 191) !important;
@@ -159,7 +140,12 @@ ion-radio-group#type-of-report {
     color: #ccc;
   }
 }
-
+form#items-form {
+  margin: 0 10px;
+  ion-radio-group#type-of-items {
+    margin: 0 !important;
+  }
+}
 ion-modal {
   --max-height: 100%;
   --border-radius: 15px;

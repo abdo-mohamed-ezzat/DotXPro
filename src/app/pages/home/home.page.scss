@@ -17,7 +17,7 @@ ion-content {
   --background: #ecf1f7; // Added missing semicolon
 
   ion-grid {
-    position: fixed;
+    position: relative;
     margin-top: -40px;
     padding: 10px;
     z-index: 9999;
@@ -64,9 +64,23 @@ ion-content {
 }
 
 svg {
-  position: fixed;
+  position: absolute;
   bottom: 0;
 }
+ion-footer {
+  display: block;
+  // position: relative;
+  -ms-flex-order: 1;
+  order: 1;
+  width: 100%;
+  z-index: 10;
+  height: 100px;
+  background: #ecf1f7;
+  box-shadow: none;
+  position: absolute;
+  bottom: 0;
+}
+
 ion-modal#account-option-modal {
   --width: fit-content;
   --min-width: 350px;
