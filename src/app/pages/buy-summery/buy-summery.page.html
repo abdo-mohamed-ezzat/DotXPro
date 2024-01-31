@@ -80,7 +80,56 @@
       </ion-col>
     </ion-row>
   </ion-grid>
-  <div
+  <div class="table">
+    <cdk-virtual-scroll-viewport  itemSize="30" class="viewport" (scrolledIndexChange)="onScroll($event)"    [ngStyle]="{'height': itemType !== 'كافة الاصناف' ? 'calc(100vh - 392px)' : 'calc(100vh - 310px)'}">
+      <table>
+        <thead>
+          <tr>
+            <th [style.top]="inverseOfTranslation">اسم المورد</th>
+            <th [style.top]="inverseOfTranslation">التاريخ</th>
+            <th [style.top]="inverseOfTranslation" *ngIf="filterForm.get('typeOfReport')?.value === 'تفصيلي'">رقم السند</th>
+            <th [style.top]="inverseOfTranslation">طريقة الدفع</th>
+            <th [style.top]="inverseOfTranslation">العملة</th>
+            <th [style.top]="inverseOfTranslation">الاجمالي</th>
+            <th [style.top]="inverseOfTranslation">المرتجع</th>
+            <th [style.top]="inverseOfTranslation">الصافي</th>
+            <th [style.top]="inverseOfTranslation">الصافي بدون الضريبة</th>
+            <th [style.top]="inverseOfTranslation">ضريبة القيمة المضافة</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *cdkVirtualFor="let report of buySummeryReport; let i = index">
+            <td>{{report.clientName}}</td>
+            <td>{{report.theDate}}</td>
+            <td *ngIf="filterForm.get('typeOfReport')?.value === 'تفصيلي'">{{report.recordNumber}}</td>
+            <td>{{report.theMethod}}</td>
+            <td>{{report.currencyName}}</td>
+            <td>{{report.totalBuy}}</td>
+            <td>{{report.totalRedone}}</td>
+            <td>{{report.totalNet}}</td>
+            <td>{{report.totalMcNet}}</td>
+            <td>{{report.totalNetTaxValue}}</td>
+          </tr>
+        </tbody>
+        <tfoot>
+          <tr>
+            <td>الاجمالي</td>
+            <td></td>
+            <td *ngIf="filterForm.get('typeOfReport')?.value === 'تفصيلي'"></td>
+            <td></td>
+            <td></td>
+            <td>{{ totalBuy }}</td>
+            <td>{{ totalRedone }}</td>
+            <td>{{ totalNet }}</td>
+            <td>{{ totalMcNet }}</td>
+            <td>{{ totalNetTaxValue }}</td>
+          </tr>
+        </tfoot>
+      </table>
+    </cdk-virtual-scroll-viewport>
+  </div>
+  <app-spinner *ngIf="loading"></app-spinner> 
+  <!-- <div
     class="table-wrapper"
     [ngStyle]="{'height': itemType !== 'كافة الاصناف' ? 'calc(100vh - 392px)' : 'calc(100vh - 310px)'}"
   >
@@ -90,7 +139,6 @@
           <span>{{col}}</span>
         </ion-col>
       </ion-row>
-      <app-spinner *ngIf="loading"></app-spinner>
       <ion-row class="table-row" *ngFor="let report of buySummeryReport">
         <ion-col><span>{{report.clientName}}</span></ion-col>
         <ion-col><span>{{report.theDate}}</span></ion-col>
@@ -120,7 +168,7 @@
         <ion-col><span>{{ totalNetTaxValue }}</span></ion-col>
       </ion-row>
     </ion-grid>
-  </div>
+  </div> -->
 
   <ion-modal
     #modal

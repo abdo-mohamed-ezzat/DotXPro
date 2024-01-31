@@ -25,14 +25,12 @@
 @import "@ionic/angular/css/text-transformation.css";
 @import "@ionic/angular/css/flex-utils.css";
 
-@import url('https://fonts.googleapis.com/css2?family=Noto+Kufi+Arabic:wght@200;400;500;600&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Noto+Kufi+Arabic:wght@200;400;500;600&display=swap");
 .header-title-align {
   text-align: center;
   font-weight: bold;
   font-size: 20px;
 }
-
-
 
 ion-header {
   z-index: 0;
@@ -68,7 +66,6 @@ ion-toggle {
   border-color: #f5c6cb;
 }
 
-
 ion-header.page-header {
   height: 71px;
   background-color: #1d4188;
@@ -88,7 +85,7 @@ ion-header.page-header {
 }
 
 body {
-  font-family: 'Tajawal', 'Noto Kufi Arabic';
+  font-family: "Tajawal", "Noto Kufi Arabic";
 }
 
 .table-footer {
@@ -104,10 +101,10 @@ body {
     font-weight: 600;
   }
 }
-ion-grid.content-grid ion-row:nth-child(2){
+ion-grid.content-grid ion-row:nth-child(2) {
   margin: 10px 5px;
 }
-ion-radio-group#type-of-items{
+ion-radio-group#type-of-items {
   display: flex;
   flex-direction: row;
   width: 100%;
@@ -138,4 +135,60 @@ ion-radio-group#type-of-items{
 
 .toast-white-text {
   --color: #1d4188;
+}
+
+.table {
+  cdk-virtual-scroll-viewport {
+    // calc the remenraining height of the page the add it to the height of the table
+  }
+  table {
+
+    tr {
+    }
+    th {
+
+    }
+    td {
+
+    }
+    thead {
+
+
+      tr {
+        th {
+
+        }
+      }
+    }
+    tbody {
+      tr {
+        td {
+        }
+      }
+    }
+    tfoot {
+      tr {
+        td {
+        }
+      }
+    }
+  }
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  ion-grid {
+    width: 100%;
+    flex-grow: 0;
+    ion-row {
+      ion-col {
+      }
+    }
+  }
+  app-virtual-scroll-table {
+    flex-grow: 1;
+    overflow: auto;
+  }
 }

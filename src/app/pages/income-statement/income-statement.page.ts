@@ -1,6 +1,6 @@
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { IonGrid, IonHeader, ModalController } from '@ionic/angular';
+import { ModalController } from '@ionic/angular';
 import { IonModal } from '@ionic/angular/common';
 import { APIService } from 'src/app/services/api.service';
 import { TimeService } from 'src/app/services/time.service';
@@ -8,7 +8,8 @@ import { IChipOption } from 'src/app/viewModels/ichip-option';
 import { IIncomeStatementReport } from 'src/app/viewModels/iincome-statement-report';
 import { IIncomeStatementRequest } from 'src/app/viewModels/iincome-statement-request';
 import { GestureController } from '@ionic/angular';
-import * as Hammer from 'hammerjs';
+import { MatTableDataSource } from '@angular/material/table';
+import { MatPaginator } from '@angular/material/paginator';
 
 @Component({
   selector: 'app-income-statement',
@@ -22,7 +23,13 @@ export class IncomeStatementPage implements OnInit {
   dateOptions!: IChipOption[];
   loading: boolean = false;
   @ViewChild('modal') modal!: IonModal;
-
+  dataSource!: MatTableDataSource<IIncomeStatementReport>;
+  columnToDisplay: string[] = [
+    'accountName',
+    'accountNumber',
+    'madeen',
+    'dain'
+  ]
   allLevels: ILevels = {
     0: 'كافة المستويات',
     1: 'المستوى الأول',
@@ -45,15 +52,16 @@ export class IncomeStatementPage implements OnInit {
   totalMadeen!: number;
   totalDain!: number;
   time!: string;
-
+  pageNumber!: number;
+  pageSize!: number;
   filterForm!: FormGroup;
   constructor(
     private timeService: TimeService,
     private apiService: APIService,
     private modalController: ModalController,
-    private gestureCtrl: GestureController
   ) {
-    
+    this.pageNumber = 1;
+    this.pageSize = 100;
     //intialize form
     this.filterForm = new FormGroup({
       level: new FormControl('كافة المستويات', Validators.required),
@@ -71,6 +79,8 @@ export class IncomeStatementPage implements OnInit {
       showCostCenter: new FormControl(false, Validators.required),
     });
 
+
+    
     // intialize page properties
     this.totalMadeen = 0;
     this.totalDain = 0;
@@ -94,6 +104,20 @@ export class IncomeStatementPage implements OnInit {
     this.modal.present();
   }
 
+  onScroll(index: number) {
+    console.log(index);
+    if (index+1 > this.incomeStatementReport.length - 10) { // If the user scrolls to the last 10 items
+      this.loadMoreData();
+    }
+  }
+
+  loadMoreData() {
+    this.pageNumber++;
+    this.loading = true;
+
+    this.filterReport();
+
+  }
   filterReport() {
     if (this.filterForm.invalid) return;
     this.modalController.dismiss();
@@ -101,6 +125,8 @@ export class IncomeStatementPage implements OnInit {
     this.totalMadeen = 0;
     this.totalDain = 0;
     this.incomeStatementRequest = {
+      PageNumber: this.pageNumber,
+      PageSize: this.pageSize,
       Level: Number(this.allLevels[this.filterForm.get('level')?.value]),
       Time: this.filterForm.get('time')?.value,
       MinTimeValue: this.filterForm.get('minTimeValue')?.value,
@@ -114,6 +140,7 @@ export class IncomeStatementPage implements OnInit {
       .subscribe({
         next: (report: IIncomeStatementReport[]) => {
           this.incomeStatementReport = report;
+          this.dataSource = new MatTableDataSource<IIncomeStatementReport>(report);
           this.incomeStatementReport.forEach((account) => {
             this.totalMadeen += account.madeen;
             this.totalDain += account.dain;

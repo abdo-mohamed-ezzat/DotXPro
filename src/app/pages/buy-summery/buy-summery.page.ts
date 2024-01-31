@@ -1,9 +1,9 @@
+import { CdkVirtualScrollViewport } from '@angular/cdk/scrolling';
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
 import { ICategory } from '@app/viewModels/icategory';
 import { ISupplier } from '@app/viewModels/isupplier';
-import { ModalController } from '@ionic/angular';
 import { IonModal } from '@ionic/angular/common';
 import {
   Observable,
@@ -40,7 +40,8 @@ export class BuySummeryPage implements OnInit {
   totalNet = 0;
   totalMcNet = 0;
   totalNetTaxValue = 0;
-
+  pageNumber: number = 1;
+  pageSize: number = 500;
   //filter items names
   typeOfReport!: string;
   itemName!: string;
@@ -64,10 +65,7 @@ export class BuySummeryPage implements OnInit {
   categoriesCtrl!: FormControl;
 
   filterForm!: FormGroup;
-  constructor(
-    private apiService: APIService,
-    public timeService: TimeService
-  ) {
+  constructor(private apiService: APIService, public timeService: TimeService) {
     //initialize form
     this.filterForm = new FormGroup({
       typeOfReport: new FormControl('تفصيلي', Validators.required),
@@ -96,6 +94,18 @@ export class BuySummeryPage implements OnInit {
     this.itemsNames = [];
   }
 
+  @ViewChild(CdkVirtualScrollViewport, { static: false })
+  public viewPort!: CdkVirtualScrollViewport;
+
+  public get inverseOfTranslation(): string {
+    if (!this.viewPort) {
+      return '-0px';
+    }
+    const offset = this.viewPort.getOffsetToRenderedContentStart();
+
+    return `-${offset}px`;
+  }
+  
   ngOnInit() {
     // lists contorls
     this.apiService.getPaymentMethod().subscribe((res) => {
@@ -242,6 +252,12 @@ export class BuySummeryPage implements OnInit {
     this.modal.present();
   }
 
+  onScroll(index: number) {
+    if (index > this.buySummeryReport.length - 10) {
+      this.pageNumber++;
+      this.filterReport();
+    }
+  }
   // apply filters
   filterReport() {
     let supplierValue = this.suppliersCtrl.value;
@@ -281,6 +297,8 @@ export class BuySummeryPage implements OnInit {
     this.totalMcNet = 0;
     this.totalNetTaxValue = 0;
     this.buySummeryRequest = {
+      PageNumber: this.pageNumber,
+      PageSize: this.pageSize,
       TypeOfReport: this.filterForm.get('typeOfReport')?.value,
       ItemName: this.filterForm.get('itemName')?.value,
       SupplierID: supplierID,
@@ -297,7 +315,7 @@ export class BuySummeryPage implements OnInit {
       next: (res) => {
         this.buySummeryReport = res;
         console.log(this.buySummeryReport);
-        this.buySummeryReport.forEach(report => {
+        this.buySummeryReport.forEach((report) => {
           this.totalBuy += report.totalBuy;
           this.totalRedone += report.totalRedone;
           this.totalNet += report.totalNet;

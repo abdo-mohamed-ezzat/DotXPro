@@ -159,3 +159,10 @@ ion-modal {
     min-width: 80%;
   }
 }
+
+.table-container{
+  width: 100%;
+  height: 100%;
+  overflow-x: auto;
+  direction: rtl;
+}

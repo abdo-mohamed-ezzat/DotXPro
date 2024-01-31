@@ -1,4 +1,6 @@
 export interface IBuySummeryRequest {
+  PageNumber: number;
+  PageSize: number;
   TypeOfReport: string;
   ItemName: string;
   SupplierID: number;

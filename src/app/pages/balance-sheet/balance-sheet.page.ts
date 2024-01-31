@@ -14,6 +14,8 @@ import { IChipOption } from '@app/viewModels/ichip-option';
   styleUrls: ['./balance-sheet.page.scss'],
 })
 export class BalanceSheetPage implements OnInit {
+  pageNumber: number = 1;
+  pageSize: number = 500;
   levels!: number[];
   totalMadeen!: number;
   totalDain!: number;
@@ -87,6 +89,8 @@ export class BalanceSheetPage implements OnInit {
     this.modalController.dismiss();
     this.loading = true;
     this.balanceSheetRequest = {
+      PageNumber: this.pageNumber,
+      PageSize: this.pageSize,
       Level: Number(this.allLevels[this.filterForm.get('level')?.value]),
       IsBeforeRelay: this.filterForm.get('isBeforeRelay')?.value,
       MaxTimeValue: this.filterForm.get('maxTimeValue')?.value,

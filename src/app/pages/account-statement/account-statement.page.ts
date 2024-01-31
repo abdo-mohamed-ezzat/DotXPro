@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
 import { APIService } from 'src/app/services/api.service';
 import { IAccountStatementReport } from 'src/app/viewModels/iaccount-statement-report';
 import { IChipOption } from 'src/app/viewModels/ichip-option';
@@ -13,6 +13,8 @@ import { TimeService } from 'src/app/services/time.service';
 import { MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
 import { IonModal } from '@ionic/angular/common';
 import { IOneAccountStatementReport } from '@app/viewModels/ione-account-statement-report';
+import { MatTableDataSource } from '@angular/material/table';
+import { MatPaginator } from '@angular/material/paginator';
 @Component({
   selector: 'app-account-statement',
   templateUrl: './account-statement.page.html',
@@ -23,8 +25,16 @@ export class AccountStatementPage implements OnInit {
   accountStatementReport!: IAccountStatementReport[];
   accountStatementRequest!: IAccountStatementRequest;
   oneAccountstatementReport!: IOneAccountStatementReport[];
+  columnsToDisplay: string[] = [
+    'accountName',
+    'accountID',
+    'currencyName',
+    'madeen',
+    'dain',
+  ];
   loading = true;
   @ViewChild('modal') modal!: IonModal;
+  @ViewChild(MatPaginator) paginator!: MatPaginator;
   totalMadeen!: number;
   totalDain!: number;
   totalBlanace = 0;
@@ -33,7 +43,95 @@ export class AccountStatementPage implements OnInit {
   dateOptions!: IChipOption[];
   accountsTypeOptions!: IChipOption[];
   currencyOptions!: IChipOption[];
-
+  dataSource =
+  new MatTableDataSource<IAccountStatementReport>( [
+    {
+      accountID: 0,
+      accountName: 'string',
+      amountSum: 0,
+      branchID: 0,
+      currencyName: 'string',
+      dain: 0,
+      madeen: 0,
+      mcAmountSum: 0,
+    },
+    {
+      accountID: 0,
+      accountName: 'string',
+      amountSum: 0,
+      branchID: 0,
+      currencyName: 'string',
+      dain: 0,
+      madeen: 0,
+      mcAmountSum: 0,
+    },
+    {
+      accountID: 0,
+      accountName: 'string',
+      amountSum: 0,
+      branchID: 0,
+      currencyName: 'string',
+      dain: 0,
+      madeen: 0,
+      mcAmountSum: 0,
+    },
+    {
+      accountID: 0,
+      accountName: 'string',
+      amountSum: 0,
+      branchID: 0,
+      currencyName: 'string',
+      dain: 0,
+      madeen: 0,
+      mcAmountSum: 0,
+    },
+    {
+      accountID: 0,
+      accountName: 'string',
+      amountSum: 0,
+      branchID: 0,
+      currencyName: 'string',
+      dain: 0,
+      madeen: 0,
+      mcAmountSum: 0,
+    },
+    {
+      accountID: 0,
+      accountName: 'string',
+      amountSum: 0,
+      branchID: 0,
+      currencyName: 'string',
+      dain: 0,
+      madeen: 0,
+      mcAmountSum: 0,
+    },
+    {
+      accountID: 0,
+      accountName: 'string',
+      amountSum: 0,
+      branchID: 0,
+      currencyName: 'string',
+      dain: 0,
+      madeen: 0,
+      mcAmountSum: 0,
+    },
+    {
+      accountID: 0,
+      accountName: 'string',
+      amountSum: 0,
+      branchID: 0,
+      currencyName: 'string',
+      dain: 0,
+      madeen: 0,
+      mcAmountSum: 0,
+    },
+  ]) ||
+    new MatTableDataSource<IAccountStatementReport>(
+      this.accountStatementReport
+    ) ||
+    new MatTableDataSource<IAccountStatementReport>(
+      [] as IAccountStatementReport[]
+    );
   accounts!: IAccount[];
   filteredAccounts!: Observable<IAccount[]>;
   accountCtrl!: FormControl;
@@ -45,13 +143,9 @@ export class AccountStatementPage implements OnInit {
   // declare request properties
   isBeforeRelay!: boolean;
   typeOfReport!: string;
-  // currency!: string;
-  // costCenter!: string;
   time!: string;
-  // minTimeValue!: string;
-  // maxTimeValue!: string;
-
-  // declare form
+  pageNumber: number = 1;
+  pageSize: number = 500;
   filterForm!: FormGroup;
 
   constructor(
@@ -124,12 +218,13 @@ export class AccountStatementPage implements OnInit {
     this.apiService.getAllCostCenters().subscribe((res) => {
       this.costCenters = res;
     });
-    this.filterForm.get('minTimeValue')?.valueChanges.subscribe(value => {
+    this.filterForm.get('minTimeValue')?.valueChanges.subscribe((value) => {
       console.log('minTimeValue changed:', value);
     });
   }
 
   ngAfterViewInit() {
+    this.dataSource.paginator = this.paginator;
     this.modal.present();
   }
 
@@ -199,6 +294,8 @@ export class AccountStatementPage implements OnInit {
     this.modalController.dismiss();
     this.loading = true;
     this.accountStatementRequest = {
+      PageNumber: this.pageNumber,
+      PageSize: this.pageSize,
       IsBeforeRelay: this.filterForm.get('isBeforeRelay')?.value,
       TypeOfReport:
         this.filterForm.get('typeOfReport')?.value || this.accountCtrl.value,

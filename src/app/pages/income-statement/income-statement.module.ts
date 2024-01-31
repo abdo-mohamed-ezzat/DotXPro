@@ -10,6 +10,9 @@ import { SpinnerModule } from 'src/app/spinner/spinner.module';
 import { IncomeStatementPage } from './income-statement.page';
 import { ReactiveFormsModule } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import {MatTableModule} from '@angular/material/table'
+import { MatPaginatorModule } from '@angular/material/paginator';
+import { ScrollingModule } from '@angular/cdk/scrolling';
 @NgModule({
   imports: [
     CommonModule,
@@ -21,7 +24,10 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
     SelectChipsModule,
     SpinnerModule,
     ReactiveFormsModule,
-    MatAutocompleteModule
+    MatAutocompleteModule,
+    MatTableModule,
+    MatPaginatorModule,
+    ScrollingModule
   ],
   declarations: [IncomeStatementPage]
 })

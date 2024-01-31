@@ -1,4 +1,6 @@
 export interface IAccountStatementRequest {
+  PageNumber: number;
+  PageSize: number;
   IsBeforeRelay: boolean;
   TypeOfReport: string;
   Currency: string;

@@ -64,12 +64,14 @@ export class APIService {
     let httpParams = new HttpParams();
     for (let key in params) {
       if (params.hasOwnProperty(key)) {
-        httpParams = httpParams.set(key, params[key]);
+        httpParams = httpParams.set(key, (params[key]));
       }
     }
+    console.log(params);
+    const fullUrl = `${environment.APIURL}/${endpoint}`;
 
     return this.http
-      .get<IAPIResponse<T>>(`${environment.APIURL}/${endpoint}`, {
+      .get<IAPIResponse<T>>(fullUrl, {
         params: httpParams,
       })
       .pipe(

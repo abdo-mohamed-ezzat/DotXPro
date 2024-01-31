@@ -7,6 +7,9 @@ import { MatBadgeModule } from '@angular/material/badge';
 import { NgModule } from '@angular/core';
 import { ScrollingModule } from '@angular/cdk/scrolling';
 import { SpinnerModule } from '@app/spinner/spinner.module';
+import {MatTableModule} from '@angular/material/table';
+import {MatPaginatorModule} from '@angular/material/paginator';
+import { MatSortModule } from '@angular/material/sort';
 @NgModule({
   exports: [
     MatAutocompleteModule,
@@ -17,6 +20,9 @@ import { SpinnerModule } from '@app/spinner/spinner.module';
     MatBadgeModule,
     ScrollingModule,
     SpinnerModule,
+    MatTableModule,
+    MatPaginatorModule,
+    MatSortModule
   ],
 })
 export class MaterialModule {}
