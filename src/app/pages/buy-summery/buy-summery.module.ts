@@ -8,6 +8,7 @@ import { SelectChipsModule } from 'src/app/components/select-chips/select-chips.
 import { BuySummeryPage } from './buy-summery.page';
 import { MaterialModule } from './material.module';
 import { SpinnerModule } from 'src/app/spinner/spinner.module';
+import { VirtualSCrollingTableModule } from '@app/components/virtual-scrolling-table/virtual-scrolling-table.module';
 @NgModule({
   imports: [
     CommonModule,
@@ -18,6 +19,7 @@ import { SpinnerModule } from 'src/app/spinner/spinner.module';
     ReactiveFormsModule,
     SelectChipsModule,
     SpinnerModule,
+    VirtualSCrollingTableModule
   ],
   declarations: [BuySummeryPage]
 })

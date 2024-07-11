@@ -7,9 +7,11 @@ import { TimeService } from 'src/app/services/time.service';
 import { IChipOption } from 'src/app/viewModels/ichip-option';
 import { IIncomeStatementReport } from 'src/app/viewModels/iincome-statement-report';
 import { IIncomeStatementRequest } from 'src/app/viewModels/iincome-statement-request';
-import { GestureController } from '@ionic/angular';
 import { MatTableDataSource } from '@angular/material/table';
-import { MatPaginator } from '@angular/material/paginator';
+import { Subject, takeUntil } from 'rxjs';
+import { SharedTableDataService } from '@app/services/shared-table-data.service';
+import { ColumnDef } from '@app/viewModels/column-def';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-income-statement',
@@ -17,6 +19,59 @@ import { MatPaginator } from '@angular/material/paginator';
   styleUrls: ['./income-statement.page.scss'],
 })
 export class IncomeStatementPage implements OnInit {
+  private destroy$ = new Subject<void>();
+
+  submit() {
+    this.tableDataService.deleteTableData();
+    this.tableDataService.setCurrentPageIndex(1);
+  }
+  getColumnDefs(showCostCenter: boolean): ColumnDef[] {
+    const columns: ColumnDef[] = [
+      {
+        displayName: 'اسم الحساب',
+        field: 'accountName',
+        visible: true,
+        hasTotal: false,
+      },
+      {
+        displayName: 'الرقم',
+        field: 'accountNumber',
+        visible: true,
+        hasTotal: false,
+      },
+      {
+        displayName: 'مركز التكلفة',
+        field: 'costCenterName',
+        visible: showCostCenter,
+        hasTotal: false,
+      },
+      { displayName: 'مدين', field: 'madeen', visible: true, hasTotal: true },
+      { displayName: 'دائن', field: 'dain', visible: true, hasTotal: true },
+    ];
+
+    return columns.map((col) => ({ ...col }));
+  }
+  pageSize: number = environment.PAGE_SIZE;
+  pageIndex: number = 1;
+  maxCount!: number;
+
+  onLoadMoreData() {
+    this.createRequestFilters();
+    this.loading = true;
+    this.apiService
+      .getIncomeStatementReport(this.incomeStatementRequest)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (res) => {
+          this.maxCount = this.apiService.getCurrentReportTotalCount;
+          this.loading = false;
+          this.tableDataService.updateTableData(res);
+        },
+        error: () => {
+          this.loading = false;
+        },
+      });
+  }
   //declare page properties
   incomeStatementReport!: IIncomeStatementReport[];
   incomeStatementRequest!: IIncomeStatementRequest;
@@ -24,12 +79,7 @@ export class IncomeStatementPage implements OnInit {
   loading: boolean = false;
   @ViewChild('modal') modal!: IonModal;
   dataSource!: MatTableDataSource<IIncomeStatementReport>;
-  columnToDisplay: string[] = [
-    'accountName',
-    'accountNumber',
-    'madeen',
-    'dain'
-  ]
+
   allLevels: ILevels = {
     0: 'كافة المستويات',
     1: 'المستوى الأول',
@@ -46,22 +96,30 @@ export class IncomeStatementPage implements OnInit {
     'المستوى الخامس': 5,
     'المستوى السادس': 6,
   };
+
   levels!: number[];
 
   // declare request properties
   totalMadeen!: number;
   totalDain!: number;
   time!: string;
-  pageNumber!: number;
-  pageSize!: number;
   filterForm!: FormGroup;
   constructor(
     private timeService: TimeService,
     private apiService: APIService,
     private modalController: ModalController,
+    private tableDataService: SharedTableDataService
   ) {
-    this.pageNumber = 1;
-    this.pageSize = 100;
+    this.tableDataService.setCurrentReportType('incomeStatement');
+    this.tableDataService.setCurrentPageIndex(1);
+    this.tableDataService
+      .getCurrentPageIndex()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((pageIndex) => {
+        this.pageIndex = pageIndex;
+      });
+    this.tableDataService.setColumnDefs(this.getColumnDefs(false));
+
     //intialize form
     this.filterForm = new FormGroup({
       level: new FormControl('كافة المستويات', Validators.required),
@@ -79,8 +137,6 @@ export class IncomeStatementPage implements OnInit {
       showCostCenter: new FormControl(false, Validators.required),
     });
 
-
-    
     // intialize page properties
     this.totalMadeen = 0;
     this.totalDain = 0;
@@ -92,40 +148,30 @@ export class IncomeStatementPage implements OnInit {
   }
 
   ngOnInit() {
+    this.filterForm
+      .get('showCostCenter')
+      ?.valueChanges.pipe(takeUntil(this.destroy$))
+      .subscribe((value) => {
+        this.tableDataService.setColumnDefs(this.getColumnDefs(value));
+      });
     this.levels = [0];
-    this.apiService.getAccountsLevels().subscribe({
-      next: (levels: number[]) => {
-        this.levels = this.levels.concat(levels);
-      },
-    });
+    this.apiService
+      .getAccountsLevels()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (levels: number[]) => {
+          this.levels = this.levels.concat(levels);
+        },
+      });
   }
 
   ngAfterViewInit() {
     this.modal.present();
   }
 
-  onScroll(index: number) {
-    console.log(index);
-    if (index+1 > this.incomeStatementReport.length - 10) { // If the user scrolls to the last 10 items
-      this.loadMoreData();
-    }
-  }
-
-  loadMoreData() {
-    this.pageNumber++;
-    this.loading = true;
-
-    this.filterReport();
-
-  }
-  filterReport() {
-    if (this.filterForm.invalid) return;
-    this.modalController.dismiss();
-    this.loading = true;
-    this.totalMadeen = 0;
-    this.totalDain = 0;
+  createRequestFilters() {
     this.incomeStatementRequest = {
-      PageNumber: this.pageNumber,
+      PageNumber: this.pageIndex,
       PageSize: this.pageSize,
       Level: Number(this.allLevels[this.filterForm.get('level')?.value]),
       Time: this.filterForm.get('time')?.value,
@@ -135,17 +181,22 @@ export class IncomeStatementPage implements OnInit {
       UnderLockDown: this.filterForm.get('underLockDown')?.value,
       ShowCostCenter: this.filterForm.get('showCostCenter')?.value,
     };
+  }
+
+  filterReport() {
+    if (this.filterForm.invalid) return;
+    this.modalController.dismiss();
+    this.loading = true;
+
+    this.createRequestFilters();
     this.apiService
       .getIncomeStatementReport(this.incomeStatementRequest)
+      .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (report: IIncomeStatementReport[]) => {
           this.incomeStatementReport = report;
-          this.dataSource = new MatTableDataSource<IIncomeStatementReport>(report);
-          this.incomeStatementReport.forEach((account) => {
-            this.totalMadeen += account.madeen;
-            this.totalDain += account.dain;
-          });
-          console.log(this.totalDain, this.totalMadeen);
+          this.tableDataService.setTableData(report);
+          this.maxCount = this.apiService.getCurrentReportTotalCount;
           this.loading = false;
         },
         error: (err: any) => {
@@ -153,11 +204,17 @@ export class IncomeStatementPage implements OnInit {
         },
       });
   }
-
   // set emited values
   setDateOption(dateOptions: IChipOption) {
     this.filterForm.get('time')?.setValue(dateOptions.name);
     this.time = dateOptions.name;
+  }
+
+  ngOnDestroy() {
+    this.tableDataService.deleteTableColumns();
+    this.tableDataService.deleteTableData();
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 }
 

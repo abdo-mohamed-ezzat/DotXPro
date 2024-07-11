@@ -1,10 +1,18 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import {
+  FormBuilder,
+  FormControl,
+  FormGroup,
+  Validators,
+} from '@angular/forms';
 import { MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
+import { SharedTableDataService } from '@app/services/shared-table-data.service';
+import { ColumnDef } from '@app/viewModels/column-def';
 import { ICategory } from '@app/viewModels/icategory';
 import { ISupplier } from '@app/viewModels/isupplier';
 import { IonModal, ModalController } from '@ionic/angular';
 import {
+  EMPTY,
   Observable,
   debounceTime,
   distinctUntilChanged,
@@ -12,6 +20,9 @@ import {
   of,
   startWith,
   switchMap,
+  tap,
+  takeUntil,
+  Subject,
 } from 'rxjs';
 import { APIService } from 'src/app/services/api.service';
 import { TimeService } from 'src/app/services/time.service';
@@ -21,6 +32,7 @@ import { IcustomerAndSuplier } from 'src/app/viewModels/icustomer-and-suplier';
 import { Iitem } from 'src/app/viewModels/iitem';
 import { ISalesProfitReport } from 'src/app/viewModels/isales-profit-report';
 import { ISalesProfitRequest } from 'src/app/viewModels/isales-profit-request';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-sales-profit',
@@ -28,14 +40,164 @@ import { ISalesProfitRequest } from 'src/app/viewModels/isales-profit-request';
   styleUrls: ['./sales-profit.page.scss'],
 })
 export class SalesProfitPage implements OnInit {
+  private destroy$ = new Subject<void>();
+  submit() {
+    this.tableDataService.deleteTableData();
+    this.tableDataService.setCurrentPageIndex(1);
+  }
+
+  getColumnDefs(typeOfReport: string): ColumnDef[] {
+    const columnDefs: ColumnDef[] = [
+      {
+        displayName: 'المستند',
+        field: 'documentName',
+        visible: typeOfReport === 'تفصيلي' || typeOfReport === 'تجميع بالمستند',
+        hasTotal: false,
+      },
+      // {
+      //   displayName: 'نوع المستند',
+      //   field: 'documentType',
+      //   visible: true,
+      //   hasTotal: false,
+      // },
+      {
+        displayName: 'رقم.ف',
+        field: 'recordNumber',
+        visible: typeOfReport === 'تفصيلي' || typeOfReport === 'تجميع بالمستند',
+        hasTotal: false,
+      },
+      {
+        displayName: 'العميل',
+        field: 'clientName',
+        visible: typeOfReport === 'تفصيلي' || typeOfReport === 'تجميع بالعميل',
+        hasTotal: false,
+      },
+      {
+        displayName: 'رقم العميل',
+        field: 'clientNumber',
+        visible:  typeOfReport === 'تجميع بالعميل',
+        hasTotal: false,
+      },
+      // {
+      //   displayName: 'مجموعة الصنف',
+      //   field: 'categoryName',
+      //   visible: typeOfReport === 'تفصيلي',
+      //   hasTotal: false,
+      // },
+      // {
+      //   displayName: 'رقم الصنف',
+      //   field: 'itemNumber',
+      //   visible: typeOfReport === 'تفصيلي',
+      //   hasTotal: false,
+      // },
+      {
+        displayName: 'الصنف',
+        field: 'itemName',
+        visible: typeOfReport === 'تفصيلي' || typeOfReport === 'تجميع بالصنف',
+        hasTotal: false,
+      },
+      {
+        displayName: 'الوحدة',
+        field: 'unitName',
+        visible: typeOfReport === 'تفصيلي',
+        hasTotal: false,
+      },
+      {
+        displayName: 'الكمية',
+        field: 'saleQuantity',
+        visible: typeOfReport === 'تفصيلي',
+        hasTotal: false,
+      },
+      {
+        displayName: 'البونص',
+        field: 'bonus',
+        visible: typeOfReport === 'تفصيلي',
+        hasTotal: true,
+      },
+      {
+        displayName: 'تكلفة الوحدة',
+        field: 'unitCost',
+        visible: typeOfReport === 'تفصيلي',
+        hasTotal: true,
+      },
+      {
+        displayName: 'اجمالي التكلفة',
+        field: 'allCostPrice',
+        visible: true,
+        hasTotal: true,
+      },
+      {
+        displayName: 'بيع الوحدة',
+        field: 'unitPrice',
+        visible: typeOfReport === 'تفصيلي',
+        hasTotal: true,
+      },
+      {
+        displayName: 'اجمالي البيع',
+        field: 'totalSellPrice',
+        visible: true,
+        hasTotal: true,
+      },
+      {
+        displayName: 'الخصم',
+        field: 'totalSellDiscount',
+        visible: true,
+        hasTotal: true,
+      },
+      {
+        displayName: 'اجمالي بعد الخصم',
+        field: 'totalSellPriceDiscount',
+        visible: true,
+        hasTotal: true,
+      },
+      {
+        displayName: 'الربح',
+        field: 'sellProfit',
+        visible: true,
+        hasTotal: true,
+      },
+      {
+        displayName: 'نسبة الربح',
+        field: 'sellProfitRate',
+        visible: true,
+        hasTotal: true,
+      },
+      {
+        displayName: 'التاريخ',
+        field: 'theDate',
+        visible: typeOfReport === 'تفصيلي' || typeOfReport === 'تجميع بالمستند',
+        hasTotal: false,
+      },
+    ];
+    return columnDefs;
+  }
+
+  pageSize: number = environment.PAGE_SIZE;
+  pageIndex: number = 1;
+  maxCount!: number;
+
+  onLoadMoreData() {
+    this.createRequestFilters();
+    this.loading = true;
+    this.apiService
+      .getSalesProfitReport(this.salesProfitRequest)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (res) => {
+          this.loading = false;
+          this.tableDataService.updateTableData(res);
+        },
+        error: () => {
+          this.loading = false;
+        },
+      });
+  }
   //request values binding
   time!: string;
   itemName!: string;
   costCenterName!: string;
-
-  filterForm!: FormGroup;
-
   //page data
+  filterForm!: FormGroup;
   salesProfitReport!: ISalesProfitReport[];
   salesProfitRequest!: ISalesProfitRequest;
   dateOptions!: IChipOption[];
@@ -65,22 +227,29 @@ export class SalesProfitPage implements OnInit {
   filterdCostCenters!: Observable<ICostCenter[]>;
   costCenterCtrl!: FormControl;
 
-
   suplliers!: ISupplier[];
   filteredSuppliers!: Observable<ISupplier[]>;
   suppliersCtrl!: FormControl;
-
   categories!: ICategory[];
   filteredCategories!: Observable<ICategory[]>;
   categoriesCtrl!: FormControl;
-  
+
   constructor(
     private apiService: APIService,
     private timeService: TimeService,
-    private modalController: ModalController
+    private modalController: ModalController,
+    private fb: FormBuilder,
+    private tableDataService: SharedTableDataService
   ) {
+    ///////
+    this.tableDataService.setCurrentPageIndex(1);
+    this.tableDataService
+      .getCurrentPageIndex()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((pageIndex) => {
+        this.pageIndex = pageIndex;
+      });
     this.itemType = 'كافة الاصناف';
-
     // intialize form
     this.filterForm = new FormGroup({
       costCenterName: new FormControl('كافة المراكز', Validators.required),
@@ -107,27 +276,32 @@ export class SalesProfitPage implements OnInit {
     ];
 
     // filter items names
-    this.itemsNamesCtrl = new FormControl('');
     this.itemsNames = [];
-    this.apiService.getitemName().subscribe((res) => {
-      this.itemsNames = res;
-    });
-    this.itemsNamesCtrl = new FormControl('');
+    this.apiService
+      .getitemName()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((res) => {
+        this.itemsNames = res;
+      });
+
+    this.itemsNamesCtrl = new FormControl('كافة الاصناف', Validators.required);
     this.filterdItemsNames = this.itemsNamesCtrl.valueChanges.pipe(
-      startWith(''),
       debounceTime(200),
       distinctUntilChanged(),
       switchMap((itemName) =>
         itemName ? this.filterItemsNames(itemName) : of(this.itemsNames.slice())
       )
     );
-
     //filter customer name
     this.customersNames = [];
-    this.apiService.getCustomerNames().subscribe((res) => {
-      this.customersNames = res;
-      this.allSuppliers = res;
-    });
+    this.apiService
+      .getCustomerNames()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((res) => {
+        this.customersNames = res;
+        this.allSuppliers = res;
+      });
+
     this.customerNameCtrl = new FormControl(
       'كافة العملاء',
       Validators.required
@@ -143,9 +317,12 @@ export class SalesProfitPage implements OnInit {
 
     //filter cost centers
     this.costCenters = [];
-    this.apiService.getAllCostCenters().subscribe((res) => {
-      this.costCenters = res;
-    });
+    this.apiService
+      .getAllCostCenters()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((res) => {
+        this.costCenters = res;
+      });
     this.costCenterCtrl = new FormControl('كافة المراكز', Validators.required);
     this.filterdCostCenters = this.costCenterCtrl.valueChanges.pipe(
       startWith(''),
@@ -156,11 +333,23 @@ export class SalesProfitPage implements OnInit {
   }
 
   ngOnInit() {
-    this.apiService.getCustomerNames().subscribe((res) => {
-      this.suplliers = res;
-    });
+    this.tableDataService.setColumnDefs(this.getColumnDefs('تفصيلي'));
+    this.filterForm
+      .get('typeOfReport')
+      ?.valueChanges.pipe(takeUntil(this.destroy$))
+      .subscribe((value) => {
+        this.tableDataService.setColumnDefs(this.getColumnDefs(value));
+      });
+    /////
+    this.apiService
+      .getCustomerNames()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((res) => {
+        this.suplliers = res;
+      });
     this.suppliersCtrl = new FormControl('كافة الموردين', Validators.required);
     this.filteredSuppliers = this.suppliersCtrl.valueChanges.pipe(
+      startWith(''),
       map((supplier) => {
         return supplier
           ? this.filterSuppliers(supplier)
@@ -169,14 +358,18 @@ export class SalesProfitPage implements OnInit {
     );
 
     //filter categories
-    this.apiService.getAllCategories().subscribe((res) => {
-      this.categories = res;
-    });
+    this.apiService
+      .getAllCategories()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((res) => {
+        this.categories = res;
+      });
     this.categoriesCtrl = new FormControl(
       'كافة المجموعات',
       Validators.required
     );
     this.filteredCategories = this.categoriesCtrl.valueChanges.pipe(
+      startWith(''),
       map((category) => {
         return category
           ? this.filterCategories(category)
@@ -254,11 +447,11 @@ export class SalesProfitPage implements OnInit {
 
   onItemSelected(event: MatAutocompleteSelectedEvent) {
     this.filterForm.get('itemName')?.setValue(event.option.value);
-    this.modal.present();
+    this.itemsNamesCtrl.value.setValue(event.option.value);
   }
 
-  //apply filters
-  filterReport() {
+  createRequestFilters() {
+    // this.tableDataService.setCurrentPageIndex(1);
     let supplierValue = this.suppliersCtrl.value;
     let matchingSupplier = this.suplliers.find(
       (supplier) => supplier.value === supplierValue
@@ -269,25 +462,9 @@ export class SalesProfitPage implements OnInit {
       (category) => category.value === categoryValue
     );
     let categoryID = matchingCategory ? matchingCategory.key : 0;
-    if (
-      this.filterForm.invalid ||
-      this.customerNameCtrl.invalid ||
-      this.costCenterCtrl.invalid ||
-      this.suppliersCtrl.invalid ||
-      this.categoriesCtrl.invalid
-    ) {
-      return;
-    }
-    this.loading = true;
-    this.totalSaleQuantity = 0;
-    this.totalBonus = 0;
-    this.totalUnitCost = 0;
-    this.totalAllCostPrice = 0;
-    this.totalUnitPrice = 0;
-    this.totalSellPrice = 0;
-    this.totalSellDiscount = 0;
-    
     this.salesProfitRequest = {
+      PageSize: this.pageSize,
+      PageNumber: this.pageIndex,
       TypeOfReport: this.filterForm.get('typeOfReport')?.value,
       ItemName: this.filterForm.get('itemName')?.value,
       Time: this.filterForm.get('time')?.value,
@@ -298,28 +475,44 @@ export class SalesProfitPage implements OnInit {
       ClientName: this.customerNameCtrl.value,
       CostCenterName: this.costCenterCtrl.value,
     };
-    if (this.filterForm.get('itemName')?.value !== 'كافة الاصناف') {
-      this.filterForm.get('itemName')?.setValue('صنف واحد');
+    // if (this.filterForm.get('itemName')?.value !== 'كافة الاصناف') {
+    //   this.filterForm.get('itemName')?.setValue('صنف واحد');
+    // }
+  }
+  //apply filters
+  filterReport() {
+    if (
+      this.filterForm.invalid ||
+      this.customerNameCtrl.invalid ||
+      this.costCenterCtrl.invalid ||
+      this.suppliersCtrl.invalid ||
+      this.categoriesCtrl.invalid
+    ) {
+      return;
     }
-    this.apiService.getSalesProfitReport(this.salesProfitRequest).subscribe({
-      next: (res) => {
-        this.salesProfitReport = res;
-        this.salesProfitReport.forEach((report) => {
-          this.totalSaleQuantity += report.saleQuantity;
-          this.totalBonus += report.bonus;
-          this.totalUnitCost += report.unitCost;
-          this.totalAllCostPrice += report.allCostPrice;
-          this.totalUnitPrice += report.unitPrice;
-          this.totalSellPrice += report.totalSellPrice;
-          this.totalSellDiscount += report.totalSellDiscount;
-        });
-        this.loading = false;
-      },
-      error: (err) => {
-        this.loading = false;
-      },
-    });
+    this.loading = true;
+    this.createRequestFilters();
+    this.apiService
+      .getSalesProfitReport(this.salesProfitRequest)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (res) => {
+          this.tableDataService.setTableData(res);
+          this.maxCount = this.apiService.getCurrentReportTotalCount;
+          this.loading = false;
+        },
+        error: (err) => {
+          this.loading = false;
+        },
+      });
 
     this.modalController.dismiss();
+  }
+
+  ngOnDestroy() {
+    this.tableDataService.deleteTableColumns();
+    this.tableDataService.deleteTableData();
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 }

@@ -7,6 +7,10 @@ import { IBalanceSheetReport } from 'src/app/viewModels/ibalance-sheet-report';
 import { IBalanceSheetRequest } from 'src/app/viewModels/ibalance-sheet-request';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { IChipOption } from '@app/viewModels/ichip-option';
+import { SharedTableDataService } from '@app/services/shared-table-data.service';
+import { Subject, takeUntil } from 'rxjs';
+import { ColumnDef } from '@app/viewModels/column-def';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-balance-sheet',
@@ -14,8 +18,52 @@ import { IChipOption } from '@app/viewModels/ichip-option';
   styleUrls: ['./balance-sheet.page.scss'],
 })
 export class BalanceSheetPage implements OnInit {
-  pageNumber: number = 1;
-  pageSize: number = 500;
+  private destroy$ = new Subject<void>();
+
+  submit() {
+    this.tableDataService.deleteTableData();
+    this.tableDataService.setCurrentPageIndex(1);
+  }
+
+  columns: ColumnDef[] = [
+    {
+      displayName: 'اسم الحساب',
+      field: 'accountName',
+      visible: true,
+      hasTotal: false,
+    },
+    {
+      displayName: 'الرقم',
+      field: 'accountNumber',
+      visible: true,
+      hasTotal: false,
+    },
+    { displayName: 'مدين', field: 'madeen', visible: true, hasTotal: true },
+    { displayName: 'دائن', field: 'dain', visible: true, hasTotal: true },
+  ];
+
+  pageSize: number = environment.PAGE_SIZE;
+  pageIndex: number = 1;
+  maxCount!: number;
+
+  onLoadMoreData() {
+    this.createRequestFilters();
+    this.loading = true;
+    this.apiService
+      .getBalanceSheetReport(this.balanceSheetRequest)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (res) => {
+          this.maxCount = this.apiService.getCurrentReportTotalCount;
+          this.loading = false;
+          this.tableDataService.updateTableData(res);
+        },
+        error: () => {
+          this.loading = false;
+        },
+      });
+  }
+  //////
   levels!: number[];
   totalMadeen!: number;
   totalDain!: number;
@@ -47,10 +95,19 @@ export class BalanceSheetPage implements OnInit {
   constructor(
     private apiService: APIService,
     private modalController: ModalController,
-    private TimeService: TimeService
+    private TimeService: TimeService,
+    private tableDataService: SharedTableDataService
   ) {
-    this.totalDain = 0;
-    this.totalMadeen = 0;
+    this.tableDataService.setCurrentReportType('balanceSheet');
+    this.tableDataService.setColumnDefs(this.columns);
+    this.tableDataService.setCurrentPageIndex(1);
+    this.tableDataService
+      .getCurrentPageIndex()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((pageIndex) => {
+        this.pageIndex = pageIndex;
+      });
+
     this.dateOptions = [
       {
         name: 'حتى يوم',
@@ -71,15 +128,27 @@ export class BalanceSheetPage implements OnInit {
 
   ngOnInit() {
     this.levels = [0];
-    this.apiService.getAccountsLevels().subscribe({
-      next: (data) => (this.levels = this.levels.concat(data)),
-    });
+    this.apiService
+      .getAccountsLevels()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (data) => (this.levels = this.levels.concat(data)),
+      });
   }
 
   ngAfterViewInit() {
     this.modal.present();
   }
 
+  createRequestFilters() {
+    this.balanceSheetRequest = {
+      PageNumber: this.pageIndex,
+      PageSize: this.pageSize,
+      Level: Number(this.allLevels[this.filterForm.get('level')?.value]),
+      IsBeforeRelay: this.filterForm.get('isBeforeRelay')?.value,
+      MaxTimeValue: this.filterForm.get('maxTimeValue')?.value,
+    };
+  }
   filterReport() {
     if (this.filterForm.invalid) {
       return;
@@ -88,28 +157,29 @@ export class BalanceSheetPage implements OnInit {
     this.totalMadeen = 0;
     this.modalController.dismiss();
     this.loading = true;
-    this.balanceSheetRequest = {
-      PageNumber: this.pageNumber,
-      PageSize: this.pageSize,
-      Level: Number(this.allLevels[this.filterForm.get('level')?.value]),
-      IsBeforeRelay: this.filterForm.get('isBeforeRelay')?.value,
-      MaxTimeValue: this.filterForm.get('maxTimeValue')?.value,
-    };
 
-    this.apiService.getBalanceSheetReport(this.balanceSheetRequest).subscribe({
-      next: (data: IBalanceSheetReport[]) => {
-        this.balanceSheetReport = data;
-        this.balanceSheetReport.forEach((report) => {
-          this.totalMadeen += report.madeen;
-          this.totalDain += report.dain;
-        });
-        this.loading = false;
-      },
-      error: (error: any) => {
-        console.log(error.message);
-        this.loading = false;
-      },
-    });
+    this.createRequestFilters();
+    this.apiService
+      .getBalanceSheetReport(this.balanceSheetRequest)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (data: IBalanceSheetReport[]) => {
+          this.tableDataService.setTableData(data);
+          this.maxCount = this.apiService.currentReportTotalCount;
+          this.balanceSheetReport = data;
+          this.loading = false;
+        },
+        error: (error: any) => {
+          console.log(error.message);
+          this.loading = false;
+        },
+      });
+  }
+  ngOnDestroy() {
+    this.tableDataService.deleteTableColumns();
+    this.tableDataService.deleteTableData();
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 }
 interface ILevels {

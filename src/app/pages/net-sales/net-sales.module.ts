@@ -8,6 +8,7 @@ import { NetSalesPage } from './net-sales.page';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import {MaterialModule} from './material.moudle';
 import { SelectChipsModule } from 'src/app/components/select-chips/select-chips.module';
+import { VirtualSCrollingTableModule } from '@app/components/virtual-scrolling-table/virtual-scrolling-table.module';
 @NgModule({
   imports: [
     CommonModule,
@@ -18,7 +19,8 @@ import { SelectChipsModule } from 'src/app/components/select-chips/select-chips.
     MaterialModule,
     ScrollingModule,
     SelectChipsModule,
-    SpinnerModule
+    SpinnerModule,
+    VirtualSCrollingTableModule
   ],
   declarations: [NetSalesPage]
 })

@@ -82,13 +82,17 @@ legend {
     width: 48%;
     .input-item {
       ion-select {
-        margin-bottom: 20px;
+        // margin-bottom: 20px;
       }
     }
   }
 }
-
+.input-item {
+  ion-select {
+  }
+}
 .pass {
   display: flex;
   padding: 15px 15px 20px 15px;
 }
+

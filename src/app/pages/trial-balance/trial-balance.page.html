@@ -1,11 +1,11 @@
 <ion-header [translucent]="true" class="ion-no-border">
   <ion-toolbar>
     <ion-buttons slot="start">
-      <ion-back-button></ion-back-button>
+      <ion-back-button color="light"  defaultHref="/home"></ion-back-button>
     </ion-buttons>
     <ion-buttons slot="end">
       <ion-menu-toggle auto-hide="false" side="end">
-        <ion-button>
+        <ion-button color="light">
           <ion-icon name="menu"></ion-icon>
         </ion-button>
       </ion-menu-toggle>
@@ -17,108 +17,29 @@
 </ion-header>
 
 <ion-content>
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320">
-    <path
-      fill="#1d4188"
-      fill-opacity="1"
-      d="M0,256L60,218.7C120,181,240,107,360,85.3C480,64,600,96,720,138.7C840,181,960,235,1080,261.3C1200,288,1320,288,1380,288L1440,288L1440,0L1380,0C1320,0,1200,0,1080,0C960,0,840,0,720,0C600,0,480,0,360,0C240,0,120,0,60,0L0,0Z"
-    ></path>
-  </svg>
-  <ion-grid class="ion-no-padding">
-    <ion-row>
-      <ion-col>
-        <ion-button id="open-modal">
-          <ion-icon name="filter-outline"></ion-icon>
-        </ion-button>
-      </ion-col>
-    </ion-row>
-  </ion-grid>
-
-  <div class="table-wrapper">
-    <ion-grid class="table">
-      <ion-row class="table-header">
-        <ion-col size="3">
-          <span>اسم الحساب</span>
-        </ion-col>
-        <ion-col size="1">
-          <span>الرقم</span>
-        </ion-col>
-        <ion-col size="2">
-          <span>رصيد أول فترة</span>
-          <div class="split-cell">
-            <span>دائن</span>
-            <span>مدين</span>
-          </div>
-        </ion-col>
-        <ion-col size="3">
-          <span>حركة الفترة</span>
-          <div class="split-cell">
-            <span>دائن</span>
-            <span>مدين</span>
-          </div>
-        </ion-col>
-        <ion-col size="3">
-          <span>رصيد اخر فترة</span>
-          <div class="split-cell">
-            <span>دائن</span>
-            <span>مدين</span>
-          </div>
-        </ion-col>
-      </ion-row>
-      <app-spinner *ngIf="loading"></app-spinner>
-      <ion-row class="table-row" *ngFor="let account of trialBalanceReport">
-        <ion-col size="3">
-          <span>{{ account.accountName }}</span>
-        </ion-col>
-        <ion-col size="1">
-          <span>{{ account.accountNumber }}</span>
-        </ion-col>
-        <ion-col size="2">
-          <div class="split-cell" style="direction: ltr">
-            <span>{{ account.dain | number:'1.2-2' }}</span>
-            <span>{{ account.md1| number:'1.2-2' }}</span>
-          </div>
-        </ion-col>
-        <ion-col size="3">
-          <div class="split-cell" style="direction: ltr">
-            <span>{{ account.dain2 | number:'1.2-2' }}</span>
-            <span>{{account.md2 | number: '1.2-2' }}</span>
-          </div>
-        </ion-col>
-        <ion-col size="3">
-          <div class="split-cell" style="direction: ltr">
-            <span>{{ account.dain3 | number:'1.2-2' }}</span>
-            <span>{{ account.md3 | number:'1.2-2' }}</span>
-          </div>
-        </ion-col>
-      </ion-row>
-      <ion-row class="table-footer">
-        <ion-col size="3">
-          <span>Total</span>
-        </ion-col>
-        <ion-col size="1"></ion-col>
-        <ion-col size="2">
-          <div class="split-cell" style="direction: ltr">
-            <span>{{ totalDain | number:'1.2-2' }}</span>
-            <span>{{ totalMd1 | number:'1.2-2' }}</span>
-          </div>
-        </ion-col>
-        <ion-col size="3">
-          <div class="split-cell" style="direction: ltr">
-            <span>{{ totalDain2 | number:'1.2-2' }}</span>
-            <span>{{ totalMd2 | number:'1.2-2' }}</span>
-          </div>
-        </ion-col>
-        <ion-col size="3">
-          <div class="split-cell" style="direction: ltr">
-            <span>{{ totalDain3 | number:'1.2-2' }}</span>
-            <span>{{ totalMd3 | number:'1.2-2' }}</span>
-          </div>
+  <div class="container">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320">
+      <path
+        fill="#1d4188"
+        fill-opacity="1"
+        d="M0,256L60,218.7C120,181,240,107,360,85.3C480,64,600,96,720,138.7C840,181,960,235,1080,261.3C1200,288,1320,288,1380,288L1440,288L1440,0L1380,0C1320,0,1200,0,1080,0C960,0,840,0,720,0C600,0,480,0,360,0C240,0,120,0,60,0L0,0Z"
+      ></path>
+    </svg>
+    <ion-grid class="ion-no-padding">
+      <ion-row>
+        <ion-col>
+          <ion-button id="open-modal">
+            <ion-icon name="filter-outline"></ion-icon>
+          </ion-button>
         </ion-col>
       </ion-row>
     </ion-grid>
+    <app-virtual-scrolling-table
+      [MAX_COUNT]="maxCount"
+      (fetchMoreData)="onLoadMoreData()"
+    ></app-virtual-scrolling-table>
   </div>
-
+  <app-spinner *ngIf="loading"></app-spinner>
 </ion-content>
 
 <ion-modal
@@ -141,6 +62,7 @@
               formControlName="level"
               required
               [matAutocomplete]="auto"
+              (click)="$any($event.target).select()"
             />
             <mat-error *ngIf="filterForm.get('level')?.hasError('required')"
               >المستوى مطلوب</mat-error
@@ -198,7 +120,7 @@
           </div>
         </div>
         <div class="submit-button-container">
-          <ion-button color="primary" size="large" shape="round" type="submit"
+          <ion-button color="primary" size="large" shape="round" type="submit" (click)="submit()"
             >تطبيق</ion-button
           >
         </div>

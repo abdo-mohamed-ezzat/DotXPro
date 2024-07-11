@@ -2,6 +2,7 @@
   <ion-chip
     *ngFor="let option of selectOptions"
     [class.clicked]="option.clicked"
+    [disabled]="allowedMultiClick && option.disabled"
     [outline]="true"
     (click)="onChipClick(option.id)"
     #chip

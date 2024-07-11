@@ -9,6 +9,7 @@ import { ItemsInventoryPage } from './items-inventory.page';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ScrollingModule } from '@angular/cdk/scrolling'; 
 import { SpinnerModule } from 'src/app/spinner/spinner.module';
+import { VirtualSCrollingTableModule } from '@app/components/virtual-scrolling-table/virtual-scrolling-table.module';
 @NgModule({
   imports: [
     CommonModule,
@@ -20,7 +21,8 @@ import { SpinnerModule } from 'src/app/spinner/spinner.module';
     MaterialModule, 
     ReactiveFormsModule,
     ScrollingModule,
-    SpinnerModule
+    SpinnerModule,
+    VirtualSCrollingTableModule
   ],
   declarations: [ItemsInventoryPage],
 })

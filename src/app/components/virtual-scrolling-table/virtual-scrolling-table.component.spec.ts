@@ -1,19 +1,19 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { IonicModule } from '@ionic/angular';
 
-import { VirtualScrollTableComponent } from './virtual-scroll-table.component';
+import { VirtualSCrollingTableComponent } from './virtual-scrolling-table.component';
 
-describe('VirtualScrollTableComponent', () => {
-  let component: VirtualScrollTableComponent;
-  let fixture: ComponentFixture<VirtualScrollTableComponent>;
+describe('VirtualSCrollingTableComponent', () => {
+  let component: VirtualSCrollingTableComponent;
+  let fixture: ComponentFixture<VirtualSCrollingTableComponent>;
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ VirtualScrollTableComponent ],
+      declarations: [ VirtualSCrollingTableComponent ],
       imports: [IonicModule.forRoot()]
     }).compileComponents();
 
-    fixture = TestBed.createComponent(VirtualScrollTableComponent);
+    fixture = TestBed.createComponent(VirtualSCrollingTableComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   }));

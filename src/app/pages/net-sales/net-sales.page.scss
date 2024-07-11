@@ -33,71 +33,6 @@ ion-header {
   height: 140px;
 }
 
-.table-wrapper {
-  overflow: auto;
-  height: calc(100vh - 310px);
-  direction: rtl;
-  padding: 0;
-  border: 0;
-  margin: 0;
-  ion-grid.table {
-    min-width: 850px;
-    ion-col {
-      span {
-      }
-    }
-    ion-row.table-header {
-      text-align: center;
-      background-color: rgb(83 114 191);
-      position: sticky;
-      top: 0;
-      left: 0;
-      right: 0;
-      z-index: 9999;
-      color: #fff;
-      ion-col {
-        span {
-          font-weight: bold;
-        }
-      }
-    }
-
-    ion-row:not(.table-header) {
-      border-bottom: 1px solid #ccc;
-    }
-    ion-row.table-row {
-      text-align: center;
-    }
-    ion-row:not(.table-header):nth-child(odd) {
-      background-color: #e2e8ff;
-    }
-    .table-footer {
-      margin-top: 0;
-      text-align: center;
-      direction: rtl;
-      background-color: rgb(83, 114, 191) !important;
-      color: #fff;
-      ion-col {
-        text-align: center;
-        span {
-          font-weight: bold;
-        }
-      }
-    }
-  }
-}
-
-.options-section {
-  direction: rtl;
-  padding: 0 15px 20px 15px;
-  h2 {
-    font-weight: 600;
-  }
-  app-select-chip {
-    margin-top: 20px;
-  }
-}
-
 ion-radio-group#type-of-report {
   display: flex;
   flex-direction: column;
@@ -145,7 +80,7 @@ ion-radio-group#type-of-report {
 }
 
 ion-modal {
-  --max-height: 78%;
+  --max-height: 100%;
   --border-radius: 15px;
   ion-content {
     height: 100%;

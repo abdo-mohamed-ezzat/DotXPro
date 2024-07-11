@@ -15,26 +15,6 @@ export class SelectChipsComponent {
     this.allowedMultiClick = false;
   }
   optionslist!: IChipOption[];
-  // onChipClick(id: number) {
-  //   const clickedChip = this.selectOptions.find((option) => option.id === id);
-  //   if (this.allowedMultiClick) {
-  //     clickedChip!.clicked = !clickedChip?.clicked;
-  //   } else {
-  //     this.selectOptions.forEach((option) => {
-  //       option.disabled = false;
-  //     });
-
-  //     this.selectOptions.forEach((option) => {
-  //       if (option.id === id) {
-  //         option.clicked = true;
-  //       } else {
-  //         option.clicked = false;
-  //         option.disabled = true;
-  //       }
-  //     });
-  //   }
-  //   this.selectedOption.emit(clickedChip!);
-  // }
   onChipClick(id: number) {
     //if multiable selction is allowed
     if (this.allowedMultiClick) {

@@ -5,8 +5,11 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatBadgeModule } from '@angular/material/badge';
 import { NgModule } from '@angular/core';
-import { ScrollingModule } from '@angular/cdk/scrolling';
 import { SpinnerModule } from '@app/spinner/spinner.module';
+
+import { MatTableModule } from '@angular/material/table';
+import { ScrollingModule } from '@angular/cdk/scrolling';
+import { TableVirtualScrollModule } from 'ng-table-virtual-scroll';
 @NgModule({
   exports: [
     MatAutocompleteModule,
@@ -17,6 +20,8 @@ import { SpinnerModule } from '@app/spinner/spinner.module';
     MatBadgeModule,
     ScrollingModule,
     SpinnerModule,
+    MatTableModule,
+    TableVirtualScrollModule
   ],
 })
 export class MaterialModule {}

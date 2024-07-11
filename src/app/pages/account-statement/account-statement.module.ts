@@ -14,6 +14,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MaterialModule } from './material.module';
 import { TotalPipe } from '@app/pipes/total.pipe';
 import { GroupByPipe } from '@app/pipes/group-by.pipe';
+import { VirtualSCrollingTableModule } from '@app/components/virtual-scrolling-table/virtual-scrolling-table.module';
 @NgModule({
   imports: [
     CommonModule,
@@ -27,6 +28,7 @@ import { GroupByPipe } from '@app/pipes/group-by.pipe';
     ScrollingModule,
     MatFormFieldModule,
     MaterialModule,
+    VirtualSCrollingTableModule,
   ],
   declarations: [AccountStatementPage, TotalPipe, GroupByPipe],
   providers: [DatePipe, CdkVirtualScrollViewport],

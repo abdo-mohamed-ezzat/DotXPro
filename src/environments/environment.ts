@@ -5,9 +5,10 @@
 export const environment = {
   production: false,
   // APIURL: 'https://23.92.71.18:553'
-  APIURL: 'https://dev.ebda3tec.com:553'
+  APIURL: 'https://dev.infinity-tec.net',
+  PAGE_SIZE: 300
 
-
+  
   // APIURL: 'https://mohamed4aw2y-001-site1.itempurl.com'
 };
 

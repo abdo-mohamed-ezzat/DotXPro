@@ -5,7 +5,7 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatBadgeModule } from '@angular/material/badge';
 import { NgModule } from '@angular/core';
-
+import { VirtualSCrollingTableModule } from '@app/components/virtual-scrolling-table/virtual-scrolling-table.module';
 @NgModule({
   exports: [
     MatAutocompleteModule,
@@ -14,6 +14,7 @@ import { NgModule } from '@angular/core';
     MatSlideToggleModule,
     MatTooltipModule,
     MatBadgeModule,
+    VirtualSCrollingTableModule
   ],
 })
 export class MaterialModule {}

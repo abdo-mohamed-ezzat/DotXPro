@@ -1,12 +1,12 @@
 <ion-header [translucent]="true" class="ion-no-border">
   <ion-toolbar>
-    <ion-buttons slot="start">
-      <ion-back-button></ion-back-button>
+    <ion-buttons slot="start" color="light">
+      <ion-back-button color="light"  defaultHref="/home"></ion-back-button>
     </ion-buttons>
     <ion-buttons slot="end">
       <ion-menu-toggle auto-hide="false" side="end">
         <ion-button>
-          <ion-icon name="menu"></ion-icon>
+          <ion-icon name="menu" color="light"></ion-icon>
         </ion-button>
       </ion-menu-toggle>
     </ion-buttons>
@@ -17,47 +17,57 @@
 </ion-header>
 
 <ion-content class="no-padding">
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320">
-    <path
-      fill="#1d4188"
-      fill-opacity="1"
-      d="M0,256L60,218.7C120,181,240,107,360,85.3C480,64,600,96,720,138.7C840,181,960,235,1080,261.3C1200,288,1320,288,1380,288L1440,288L1440,0L1380,0C1320,0,1200,0,1080,0C960,0,840,0,720,0C600,0,480,0,360,0C240,0,120,0,60,0L0,0Z"
-    ></path>
-  </svg>
-  <ion-grid class="content-grid">
-    <ion-row>
-      <ion-radio-group id="type-of-items"
-        [allowEmptySelection]="false"
-        [(ngModel)]="itemType"
-        (ionChange)="onTypeOfItemChange($event)"
-      >
-        <ion-radio value="كافة الاصناف" labelPlacement="end"
-          ><h2>كافة الأصناف</h2></ion-radio
-        >
-        <ion-radio value="صنف واحد" labelPlacement="end"
-          ><h2>صنف واحد</h2></ion-radio
-        >
-      </ion-radio-group>
-    </ion-row>
+  <div class="container">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320">
+      <path
+        fill="#1d4188"
+        fill-opacity="1"
+        d="M0,256L60,218.7C120,181,240,107,360,85.3C480,64,600,96,720,138.7C840,181,960,235,1080,261.3C1200,288,1320,288,1380,288L1440,288L1440,0L1380,0C1320,0,1200,0,1080,0C960,0,840,0,720,0C600,0,480,0,360,0C240,0,120,0,60,0L0,0Z"
+      ></path>
+    </svg>
+    <ion-grid class="content-grid">
+     
 
-    <ion-row>
-      <ion-col size="12" *ngIf="itemType !== 'كافة الاصناف'">
-        <div>
-          <form class="form">
+      <ion-row>
+        <ion-col>
+          <ion-button id="open-modal">
+            <ion-icon name="filter-outline"></ion-icon>
+          </ion-button>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+    <app-virtual-scrolling-table
+      [MAX_COUNT]="maxCount"
+      (fetchMoreData)="onLoadMoreData()"
+    ></app-virtual-scrolling-table>
+  </div>
+  <app-spinner *ngIf="loading"></app-spinner>
+  <ion-modal
+    #modal
+    trigger="open-modal"
+    [initialBreakpoint]="1"
+    [breakpoints]="[0, 0.75, 1]"
+  >
+    <ng-template>
+      <ion-content class="no-padding">
+        <form [formGroup]="filterForm" (ngSubmit)="filterReport()">
+          <div class="options-section">
+            <h2>الأصناف</h2>
             <mat-form-field class="width">
               <input
                 matInput
-                placeholder="اسم الصنف"
                 aria-label="اسم الصنف"
                 [matAutocomplete]="auto"
                 [formControl]="itemsNamesCtrl"
                 required
+                (click)="$any($event.target).select()"
               />
               <mat-autocomplete
                 #auto="matAutocomplete"
                 (optionSelected)="onItemSelected($event)"
               >
                 <cdk-virtual-scroll-viewport itemSize="20" class="viewport">
+                  <mat-option value="كافة الاصناف">كافة الاصناف</mat-option>
                   <mat-option
                     class="vscr-item"
                     *cdkVirtualFor="let item of filterdItemsNames | async"
@@ -68,117 +78,7 @@
                 </cdk-virtual-scroll-viewport>
               </mat-autocomplete>
             </mat-form-field>
-          </form>
-        </div>
-      </ion-col>
-    </ion-row>
-    <ion-row>
-      <ion-col>
-        <ion-button id="open-modal">
-          <ion-icon name="filter-outline"></ion-icon>
-        </ion-button>
-      </ion-col>
-    </ion-row>
-  </ion-grid>
-  <div class="table">
-    <cdk-virtual-scroll-viewport  itemSize="30" class="viewport" (scrolledIndexChange)="onScroll($event)"    [ngStyle]="{'height': itemType !== 'كافة الاصناف' ? 'calc(100vh - 392px)' : 'calc(100vh - 310px)'}">
-      <table>
-        <thead>
-          <tr>
-            <th [style.top]="inverseOfTranslation">اسم المورد</th>
-            <th [style.top]="inverseOfTranslation">التاريخ</th>
-            <th [style.top]="inverseOfTranslation" *ngIf="filterForm.get('typeOfReport')?.value === 'تفصيلي'">رقم السند</th>
-            <th [style.top]="inverseOfTranslation">طريقة الدفع</th>
-            <th [style.top]="inverseOfTranslation">العملة</th>
-            <th [style.top]="inverseOfTranslation">الاجمالي</th>
-            <th [style.top]="inverseOfTranslation">المرتجع</th>
-            <th [style.top]="inverseOfTranslation">الصافي</th>
-            <th [style.top]="inverseOfTranslation">الصافي بدون الضريبة</th>
-            <th [style.top]="inverseOfTranslation">ضريبة القيمة المضافة</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *cdkVirtualFor="let report of buySummeryReport; let i = index">
-            <td>{{report.clientName}}</td>
-            <td>{{report.theDate}}</td>
-            <td *ngIf="filterForm.get('typeOfReport')?.value === 'تفصيلي'">{{report.recordNumber}}</td>
-            <td>{{report.theMethod}}</td>
-            <td>{{report.currencyName}}</td>
-            <td>{{report.totalBuy}}</td>
-            <td>{{report.totalRedone}}</td>
-            <td>{{report.totalNet}}</td>
-            <td>{{report.totalMcNet}}</td>
-            <td>{{report.totalNetTaxValue}}</td>
-          </tr>
-        </tbody>
-        <tfoot>
-          <tr>
-            <td>الاجمالي</td>
-            <td></td>
-            <td *ngIf="filterForm.get('typeOfReport')?.value === 'تفصيلي'"></td>
-            <td></td>
-            <td></td>
-            <td>{{ totalBuy }}</td>
-            <td>{{ totalRedone }}</td>
-            <td>{{ totalNet }}</td>
-            <td>{{ totalMcNet }}</td>
-            <td>{{ totalNetTaxValue }}</td>
-          </tr>
-        </tfoot>
-      </table>
-    </cdk-virtual-scroll-viewport>
-  </div>
-  <app-spinner *ngIf="loading"></app-spinner> 
-  <!-- <div
-    class="table-wrapper"
-    [ngStyle]="{'height': itemType !== 'كافة الاصناف' ? 'calc(100vh - 392px)' : 'calc(100vh - 310px)'}"
-  >
-    <ion-grid class="table">
-      <ion-row class="table-header">
-        <ion-col *ngFor="let col of getColumnHeaders()">
-          <span>{{col}}</span>
-        </ion-col>
-      </ion-row>
-      <ion-row class="table-row" *ngFor="let report of buySummeryReport">
-        <ion-col><span>{{report.clientName}}</span></ion-col>
-        <ion-col><span>{{report.theDate}}</span></ion-col>
-        <ion-col *ngIf="filterForm.get('typeOfReport')?.value === 'تفصيلي'">
-          <span>{{report.recordNumber}}</span>
-        </ion-col>
-        <ion-col><span>{{report.theMethod}}</span></ion-col>
-        <ion-col><span>{{report.currencyName}}</span></ion-col>
-        <ion-col><span>{{report.totalBuy}}</span></ion-col>
-        <ion-col><span>{{report.totalRedone}}</span></ion-col>
-        <ion-col><span>{{report.totalNet}}</span></ion-col>
-        <ion-col><span>{{report.totalMcNet}}</span></ion-col>
-        <ion-col><span>{{report.totalNetTaxValue}}</span></ion-col>
-      </ion-row>
-      <ion-row class="table-row table-footer">
-        <ion-col><span>الاجمالي</span></ion-col>
-        <ion-col> </ion-col>
-        <ion-col
-          *ngIf="filterForm.get('typeOfReport')?.value === 'تفصيلي'"
-        ></ion-col>
-        <ion-col></ion-col>
-        <ion-col></ion-col>
-        <ion-col><span>{{ totalBuy }}</span></ion-col>
-        <ion-col><span>{{ totalRedone }}</span></ion-col>
-        <ion-col><span>{{ totalNet }}</span></ion-col>
-        <ion-col><span>{{ totalMcNet }}</span></ion-col>
-        <ion-col><span>{{ totalNetTaxValue }}</span></ion-col>
-      </ion-row>
-    </ion-grid>
-  </div> -->
-
-  <ion-modal
-    #modal
-    trigger="open-modal"
-    [initialBreakpoint]="1"
-    [breakpoints]="[0, 0.75, 1]"
-  >
-    <ng-template>
-      <ion-content class="no-padding">
-        <form [formGroup]="filterForm" (ngSubmit)="filterReport()">
+          </div>
           <div class="options-section">
             <h2>المورد</h2>
             <mat-form-field class="width">
@@ -190,6 +90,7 @@
                 type="text"
                 required
                 [matAutocomplete]="suppliersAuto"
+                (click)="$any($event.target).select()"
               />
               <mat-error *ngIf="suppliersCtrl.hasError('required')"
                 >الرجاء ادخال المورد</mat-error
@@ -216,6 +117,7 @@
                 [formControl]="categoriesCtrl"
                 [matAutocomplete]="categoryAuto"
                 required
+                (click)="$any($event.target).select()"
               />
               <mat-error *ngIf="categoriesCtrl.hasError('required')"
                 >الرجاء ادخال الصنف</mat-error
@@ -242,6 +144,7 @@
                   [matAutocomplete]="paymentAuto"
                   [formControl]="paymentTypeCtrl"
                   required
+                  (click)="$any($event.target).select()"
                 />
                 <mat-error *ngIf="paymentTypeCtrl.hasError('required')"
                   >الرجاء ادخال طريقة الدفع</mat-error
@@ -262,7 +165,7 @@
             <h2>نوع التقرير</h2>
             <div class="report-options">
               <ion-radio-group
-              id="type-of-report"
+                id="type-of-report"
                 formControlName="typeOfReport"
                 [allowEmptySelection]="false"
               >
@@ -317,7 +220,7 @@
           </div>
 
           <div class="submit-button-container">
-            <ion-button color="primary" size="large" shape="round" type="submit"
+            <ion-button color="primary" size="large" shape="round" type="submit" (click)="submit()"
               >تطبيق</ion-button
             >
           </div>

@@ -5,9 +5,9 @@ import { SpinnerModule } from 'src/app/spinner/spinner.module';
 import { IonicModule } from '@ionic/angular';
 import { SelectChipsModule } from 'src/app/components/select-chips/select-chips.module';
 import { SalesProfitPageRoutingModule } from './sales-profit-routing.module';
-import { VirtualScrollTableModule } from '@app/components/virtual-scroll-table/virtual-scroll-table.module';
 import { SalesProfitPage } from './sales-profit.page';
 import { MaterialModule } from './material.module';
+import { VirtualSCrollingTableModule } from '@app/components/virtual-scrolling-table/virtual-scrolling-table.module';
 @NgModule({
   imports: [
     CommonModule,
@@ -18,7 +18,7 @@ import { MaterialModule } from './material.module';
     ReactiveFormsModule,
     SelectChipsModule,
     SpinnerModule,
-    VirtualScrollTableModule,
+    VirtualSCrollingTableModule
   ],
   declarations: [SalesProfitPage]
 })

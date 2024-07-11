@@ -1,12 +1,12 @@
-<ion-header class="ion-no-border" >
+<ion-header class="ion-no-border">
   <ion-toolbar>
-    <ion-buttons slot="start">
-      <ion-back-button></ion-back-button>
+    <ion-buttons slot="start" color="light">
+      <ion-back-button color="light"  defaultHref="/home"></ion-back-button>
     </ion-buttons>
     <ion-buttons slot="end">
       <ion-menu-toggle auto-hide="false" side="end">
         <ion-button>
-          <ion-icon name="menu"></ion-icon>
+          <ion-icon name="menu" color="light"></ion-icon>
         </ion-button>
       </ion-menu-toggle>
     </ion-buttons>
@@ -17,6 +17,7 @@
 </ion-header>
 
 <ion-content scroll-y="true">
+  <div class="container">
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320">
     <path
       fill="#1d4188"
@@ -33,52 +34,12 @@
       </ion-col>
     </ion-row>
   </ion-grid>
-<div class="table-wrapper">
-  <ion-grid class="table">
-    <ion-row class="table-header">
-      <ion-col>
-        <span>الرقم</span>
-      </ion-col>
-      <ion-col>
-        <span>اسم الحساب</span>
-      </ion-col>
-      <ion-col>
-        <span>مدين</span>
-      </ion-col>
-      <ion-col>
-        <span>دائن</span>
-      </ion-col>
-    </ion-row>
-    <app-spinner *ngIf="loading"></app-spinner>
-    <ion-row class="table-row" *ngFor="let account of balanceSheetReport">
-      <ion-col>
-        <span>{{ account.accountNumber }}</span>
-      </ion-col>
-      <ion-col>
-        <span>{{ account.accountName }}</span>
-      </ion-col>
-      <ion-col>
-        <span>{{ account.madeen | number:'1.2-2' }}</span>
-      </ion-col>
-      <ion-col>
-        <span>{{ account.dain | number:'1.2-2'}}</span>
-      </ion-col>
-    </ion-row>
-  </ion-grid>
-  <ion-grid class="table-footer">
-    <ion-row>
-      <ion-col><span>الاجمالي</span></ion-col>
-      <ion-col> </ion-col>
-      <ion-col>
-        <span>{{ totalMadeen | number:'1.2-2' }}</span>
-      </ion-col>
-      <ion-col>
-        <span>{{ totalDain | number:'1.2-2'}}</span>
-      </ion-col>
-    </ion-row>
-  </ion-grid>
+  <app-virtual-scrolling-table
+  [MAX_COUNT]="maxCount"
+  (fetchMoreData)="onLoadMoreData()"
+  ></app-virtual-scrolling-table>
 </div>
-  
+<app-spinner *ngIf="loading"></app-spinner>
 </ion-content>
 <ion-modal
   #modal
@@ -100,6 +61,7 @@
               formControlName="level"
               required
               [matAutocomplete]="auto"
+              (click)="$any($event.target).select()"
             />
             <mat-error *ngIf="filterForm.get('level')?.hasError('required')"
               >المستوى مطلوب</mat-error
@@ -137,7 +99,7 @@
           </div>
         </div>
         <div class="submit-button-container">
-          <ion-button color="primary" size="large" shape="round" type="submit"
+          <ion-button color="primary" size="large" shape="round" type="submit" (click)="submit()"
             >تطبيق</ion-button
           >
         </div>

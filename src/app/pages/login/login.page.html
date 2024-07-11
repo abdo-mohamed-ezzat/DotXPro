@@ -62,20 +62,29 @@
         </ion-item>
         <ion-item lines="none" class="ion-item branch">
           <fieldset class="input-item">
-            <legend>رقم الفرع</legend>
-            <ion-input type="text" formControlName="branchID"></ion-input>
+            <legend>اسم الفرع</legend>
+            <ion-select
+              aria-label="اسم الفرع"
+              interface="action-sheet"
+              placeholder="اسم الفرع"
+              formControlName="branchID"
+            >
+              <ion-select-option
+                *ngFor="let branch of branches"
+                [value]="branch.key"
+                >{{branch.value}}</ion-select-option
+              >
+            </ion-select>
           </fieldset>
           <ion-text color="danger" *ngIf="submitted && f['branchID'].errors">
             <small *ngIf="f['branchID'].errors['required']"
-              >ادخل رقم الفرع</small
+              >اختر اسم الفرع</small
             >
           </ion-text>
         </ion-item>
       </div>
       <div style="text-align: center">
-        <ion-text color="danger" *ngIf="error">
-          كملة السر او اسم المستخدم غير صحيح
-        </ion-text>
+        <ion-text color="danger" *ngIf="error"> {{error}} </ion-text>
       </div>
 
       <ion-button

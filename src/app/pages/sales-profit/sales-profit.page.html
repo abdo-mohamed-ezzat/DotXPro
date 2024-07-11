@@ -1,17 +1,16 @@
 <ion-header [translucent]="true" class="ion-no-border">
   <ion-toolbar>
     <ion-buttons slot="start">
-      <ion-back-button></ion-back-button>
+      <ion-back-button color="light" defaultHref="/home"></ion-back-button>
     </ion-buttons>
     <ion-buttons slot="end">
       <ion-menu-toggle auto-hide="false" side="end">
-        <ion-button>
+        <ion-button color="light">
           <ion-icon name="menu"></ion-icon>
         </ion-button>
       </ion-menu-toggle>
     </ion-buttons>
     <ion-title class="ion-text-center header-title-align"
-      >أرباح مبيعات</ion-title
       >أرباح مبيعات</ion-title
     >
   </ion-toolbar>
@@ -30,60 +29,6 @@
     </div>
     <ion-grid class="content-grid">
       <ion-row>
-        <form [formGroup]="filterForm" style="width: 100%" id="items-form">
-          <ion-radio-group
-            id="type-of-items"
-            formControlName="itemName"
-            [allowEmptySelection]="false"
-            (ionChange)="onTypeOfItemChange($event)"
-          >
-            <ion-radio value="كافة الاصناف" labelPlacement="end"
-              ><h2>كافة الأصناف</h2></ion-radio
-            >
-            <ion-radio value="صنف واحد" labelPlacement="end"
-              ><h2>صنف واحد</h2></ion-radio
-            >
-          </ion-radio-group>
-        </form>
-      </ion-row>
-      <ion-row>
-        <ion-col
-          size="12"
-          *ngIf="filterForm.get('itemName')?.value !== 'كافة الاصناف'"
-        >
-          <div>
-            <mat-form-field class="width">
-              <input
-                matInput
-                placeholder="اسم الصنف"
-                aria-label="اسم الصنف"
-                [matAutocomplete]="auto"
-                [formControl]="itemsNamesCtrl"
-                required
-                [(ngModel)]="searchItemName"
-              />
-              <mat-error *ngIf="itemsNamesCtrl.hasError"
-                >اسم الصنف مطلوب</mat-error
-              >
-              <mat-autocomplete
-                #auto="matAutocomplete"
-                (optionSelected)="onItemSelected($event)"
-              >
-                <cdk-virtual-scroll-viewport itemSize="20" class="viewport">
-                  <mat-option
-                    class="vscr-item"
-                    *cdkVirtualFor="let customer of filterdItemsNames | async"
-                    [value]="customer.value"
-                  >
-                    <span>{{ customer.value}}</span>
-                  </mat-option>
-                </cdk-virtual-scroll-viewport>
-              </mat-autocomplete>
-            </mat-form-field>
-          </div>
-        </ion-col>
-      </ion-row>
-      <ion-row>
         <ion-col>
           <ion-button id="open-modal">
             <ion-icon name="filter-outline"></ion-icon>
@@ -91,315 +36,12 @@
         </ion-col>
       </ion-row>
     </ion-grid>
-    <!-- <div class="table-container">
-    </div> -->
-    <app-virtual-scroll-table></app-virtual-scroll-table>
+    <app-virtual-scrolling-table
+      [MAX_COUNT]="maxCount"
+      (fetchMoreData)="onLoadMoreData()"
+    ></app-virtual-scrolling-table>
   </div>
-  <!-- <div class="table-wrapper">
-    <ion-grid
-      class="table"
-      [ngStyle]="{'height': filterForm.get('itemName')?.value !== 'كافة الاصناف' ? 'calc(100vh - 462px)' : 'calc(100vh - 310px)',
-      'width': filterForm.get('typeOfReport')?.value !== 'تفصيلي' ? '500px' : '1300px'}"
-      [ngStyle]="{'height': filterForm.get('itemName')?.value !== 'كافة الاصناف' ? 'calc(100vh - 462px)' : 'calc(100vh - 310px)',
-      'width': filterForm.get('typeOfReport')?.value !== 'تفصيلي' ? '500px' : '1300px'}"
-    >
-      <ion-row class="table-header">
-        <ion-col
-          style="min-width: 90px"
-          *ngIf="filterForm.get('typeOfReport')?.value === 'تفصيلي' || filterForm.get('typeOfReport')?.value === 'تجميع بالمستند'"
-        >
-        <ion-col
-          style="min-width: 90px"
-          *ngIf="filterForm.get('typeOfReport')?.value === 'تفصيلي' || filterForm.get('typeOfReport')?.value === 'تجميع بالمستند'"
-        >
-          <span>التاريخ</span>
-        </ion-col>
-        <ion-col
-          *ngIf="filterForm.get('typeOfReport')?.value === 'تفصيلي' || filterForm.get('typeOfReport')?.value === 'تجميع بالمستند'"
-        >
-        <ion-col
-          *ngIf="filterForm.get('typeOfReport')?.value === 'تفصيلي' || filterForm.get('typeOfReport')?.value === 'تجميع بالمستند'"
-        >
-          <span>المستند</span>
-        </ion-col>
-        <ion-col>
-          <span>نوع المستند</span>
-        </ion-col>
-        <ion-col
-          *ngIf="filterForm.get('typeOfReport')?.value === 'تفصيلي' || filterForm.get('typeOfReport')?.value === 'تجميع بالمستند'"
-        >
-        <ion-col
-          *ngIf="filterForm.get('typeOfReport')?.value === 'تفصيلي' || filterForm.get('typeOfReport')?.value === 'تجميع بالمستند'"
-        >
-          <span>رقم.ف</span>
-        </ion-col>
-        <ion-col
-          *ngIf="filterForm.get('typeOfReport')?.value === 'تفصيلي' || filterForm.get('typeOfReport')?.value === 'تجميع بالعميل'"
-        >
-        <ion-col
-          *ngIf="filterForm.get('typeOfReport')?.value === 'تفصيلي' || filterForm.get('typeOfReport')?.value === 'تجميع بالعميل'"
-        >
-          <span>رقم العميل</span>
-        </ion-col>
-        <ion-col
-          *ngIf="filterForm.get('typeOfReport')?.value === 'تفصيلي' || filterForm.get('typeOfReport')?.value === 'تجميع بالعميل'"
-        >
-        <ion-col
-          *ngIf="filterForm.get('typeOfReport')?.value === 'تفصيلي' || filterForm.get('typeOfReport')?.value === 'تجميع بالعميل'"
-        >
-          <span>العميل</span>
-        </ion-col>
-        <ion-col *ngIf="filterForm.get('typeOfReport')?.value === 'تفصيلي'">
-        <ion-col *ngIf="filterForm.get('typeOfReport')?.value === 'تفصيلي'">
-          <span>مجموعة الصنف</span>
-        </ion-col>
-        <ion-col *ngIf="filterForm.get('typeOfReport')?.value === 'تفصيلي'">
-        <ion-col *ngIf="filterForm.get('typeOfReport')?.value === 'تفصيلي'">
-          <span>رقم الصنف</span>
-        </ion-col>
-        <ion-col
-          style="min-width: 200px"
-          *ngIf="filterForm.get('typeOfReport')?.value === 'تفصيلي' || filterForm.get('typeOfReport')?.value === 'تجميع بالصنف'"
-        >
-        <ion-col
-          style="min-width: 200px"
-          *ngIf="filterForm.get('typeOfReport')?.value === 'تفصيلي' || filterForm.get('typeOfReport')?.value === 'تجميع بالصنف'"
-        >
-          <span>الصنف</span>
-        </ion-col>
-        <ion-col *ngIf="filterForm.get('typeOfReport')?.value === 'تفصيلي'">
-        <ion-col *ngIf="filterForm.get('typeOfReport')?.value === 'تفصيلي'">
-          <span>الوحدة</span>
-        </ion-col>
-        <ion-col *ngIf="filterForm.get('typeOfReport')?.value === 'تفصيلي'">
-        <ion-col *ngIf="filterForm.get('typeOfReport')?.value === 'تفصيلي'">
-          <span>الكمية</span>
-        </ion-col>
-        <ion-col *ngIf="filterForm.get('typeOfReport')?.value === 'تفصيلي'">
-        <ion-col *ngIf="filterForm.get('typeOfReport')?.value === 'تفصيلي'">
-          <span>البونص</span>
-        </ion-col>
-        <ion-col *ngIf="filterForm.get('typeOfReport')?.value === 'تفصيلي'">
-        <ion-col *ngIf="filterForm.get('typeOfReport')?.value === 'تفصيلي'">
-          <span>تكلفة الوحدة</span>
-        </ion-col>
-        <ion-col *ngIf="filterForm.get('typeOfReport')?.value === 'تفصيلي'">
-        <ion-col *ngIf="filterForm.get('typeOfReport')?.value === 'تفصيلي'">
-          <span>اجمالي التكلفة</span>
-        </ion-col>
-        <ion-col *ngIf="filterForm.get('typeOfReport')?.value === 'تفصيلي'">
-        <ion-col *ngIf="filterForm.get('typeOfReport')?.value === 'تفصيلي'">
-          <span>بيع الوحدة</span>
-        </ion-col>
-        <ion-col>
-          <span>اجمالي البيع</span>
-        </ion-col>
-        <ion-col>
-          <span>الخصم</span>
-        </ion-col>
-      </ion-row>
-      <app-spinner *ngIf="loading"></app-spinner>
-      <ion-row class="table-row" *ngFor="let report of salesProfitReport">
-        <ion-col
-          style="min-width: 90px"
-          *ngIf="filterForm.get('typeOfReport')?.value === 'تفصيلي' || filterForm.get('typeOfReport')?.value === 'تجميع بالمستند'"
-        >
-        <ion-col
-          style="min-width: 90px"
-          *ngIf="filterForm.get('typeOfReport')?.value === 'تفصيلي' || filterForm.get('typeOfReport')?.value === 'تجميع بالمستند'"
-        >
-          <span>{{ report.theDate | date:'MM/dd/yyyy' }}</span>
-        </ion-col>
-        <ion-col
-          *ngIf="filterForm.get('typeOfReport')?.value === 'تفصيلي' || filterForm.get('typeOfReport')?.value === 'تجميع بالمستند'"
-        >
-        <ion-col
-          *ngIf="filterForm.get('typeOfReport')?.value === 'تفصيلي' || filterForm.get('typeOfReport')?.value === 'تجميع بالمستند'"
-        >
-          <span>{{ report.documentName }}</span>
-        </ion-col>
-        <ion-col>
-          <span>{{ report.documentType }}</span>
-        </ion-col>
-        <ion-col
-          *ngIf="filterForm.get('typeOfReport')?.value === 'تفصيلي' || filterForm.get('typeOfReport')?.value === 'تجميع بالمستند'"
-        >
-        <ion-col
-          *ngIf="filterForm.get('typeOfReport')?.value === 'تفصيلي' || filterForm.get('typeOfReport')?.value === 'تجميع بالمستند'"
-        >
-          <span>{{ report.recordNumber }}</span>
-        </ion-col>
-        <ion-col
-          *ngIf="filterForm.get('typeOfReport')?.value === 'تفصيلي' || filterForm.get('typeOfReport')?.value === 'تجميع بالعميل'"
-        >
-        <ion-col
-          *ngIf="filterForm.get('typeOfReport')?.value === 'تفصيلي' || filterForm.get('typeOfReport')?.value === 'تجميع بالعميل'"
-        >
-          <span>{{ report.clientNumber }}</span>
-        </ion-col>
-        <ion-col
-          *ngIf="filterForm.get('typeOfReport')?.value === 'تفصيلي' || filterForm.get('typeOfReport')?.value === 'تجميع بالعميل'"
-        >
-        <ion-col
-          *ngIf="filterForm.get('typeOfReport')?.value === 'تفصيلي' || filterForm.get('typeOfReport')?.value === 'تجميع بالعميل'"
-        >
-          <span>{{ report.clientName }}</span>
-        </ion-col>
-        <ion-col *ngIf="filterForm.get('typeOfReport')?.value === 'تفصيلي'">
-        <ion-col *ngIf="filterForm.get('typeOfReport')?.value === 'تفصيلي'">
-          <span>{{ report.categoryName }}</span>
-        </ion-col>
-        <ion-col *ngIf="filterForm.get('typeOfReport')?.value === 'تفصيلي'">
-        <ion-col *ngIf="filterForm.get('typeOfReport')?.value === 'تفصيلي'">
-          <span>{{ report.itemNumber }}</span>
-        </ion-col>
-        <ion-col
-          style="min-width: 200px"
-          *ngIf="filterForm.get('typeOfReport')?.value === 'تفصيلي' || filterForm.get('typeOfReport')?.value === 'تجميع بالصنف'"
-        >
-        <ion-col
-          style="min-width: 200px"
-          *ngIf="filterForm.get('typeOfReport')?.value === 'تفصيلي' || filterForm.get('typeOfReport')?.value === 'تجميع بالصنف'"
-        >
-          <span>{{ report.itemName }}</span>
-        </ion-col>
-        <ion-col *ngIf="filterForm.get('typeOfReport')?.value === 'تفصيلي'">
-        <ion-col *ngIf="filterForm.get('typeOfReport')?.value === 'تفصيلي'">
-          <span>{{ report.unitName }}</span>
-        </ion-col>
-        <ion-col *ngIf="filterForm.get('typeOfReport')?.value === 'تفصيلي'">
-        <ion-col *ngIf="filterForm.get('typeOfReport')?.value === 'تفصيلي'">
-          <span>{{ report.saleQuantity }}</span>
-        </ion-col>
-        <ion-col *ngIf="filterForm.get('typeOfReport')?.value === 'تفصيلي'">
-        <ion-col *ngIf="filterForm.get('typeOfReport')?.value === 'تفصيلي'">
-          <span>{{ report.bonus | number: '1.2-2'}}</span>
-        </ion-col>
-        <ion-col *ngIf="filterForm.get('typeOfReport')?.value === 'تفصيلي'">
-        <ion-col *ngIf="filterForm.get('typeOfReport')?.value === 'تفصيلي'">
-          <span>{{ report.unitCost | number: '1.2-2'}}</span>
-        </ion-col>
-        <ion-col *ngIf="filterForm.get('typeOfReport')?.value === 'تفصيلي'">
-        <ion-col *ngIf="filterForm.get('typeOfReport')?.value === 'تفصيلي'">
-          <span>{{ report.allCostPrice | number: '1.2-2'}}</span>
-        </ion-col>
-        <ion-col *ngIf="filterForm.get('typeOfReport')?.value === 'تفصيلي'">
-        <ion-col *ngIf="filterForm.get('typeOfReport')?.value === 'تفصيلي'">
-          <span>{{ report.unitPrice | number: '1.2-2' }}</span>
-        </ion-col>
-        <ion-col>
-          <span>{{ report.totalSellPrice | number: '1.2-2'}}</span>
-        </ion-col>
-        <ion-col>
-          <span>{{ report.totalSellDiscount | number: '1.2-2'}}</span>
-        </ion-col>
-      </ion-row>
-      <ion-row class="table-footer">
-        <ion-col
-          style="min-width: 90px"
-          *ngIf="filterForm.get('typeOfReport')?.value === 'تفصيلي' || filterForm.get('typeOfReport')?.value === 'تجميع بالمستند'"
-        >
-        <ion-col
-          style="min-width: 90px"
-          *ngIf="filterForm.get('typeOfReport')?.value === 'تفصيلي' || filterForm.get('typeOfReport')?.value === 'تجميع بالمستند'"
-        >
-          <span>الاجمالى</span>
-        </ion-col>
-        <ion-col
-          *ngIf="filterForm.get('typeOfReport')?.value === 'تفصيلي' || filterForm.get('typeOfReport')?.value === 'تجميع بالمستند'"
-        >
-        </ion-col>
-        <ion-col
-          ><span
-            *ngIf="filterForm.get('typeOfReport')?.value !== 'تفصيلي' && filterForm.get('typeOfReport')?.value !== 'تجميع بالمستند'"
-            >الاجمالي</span
-          ></ion-col
-        >
-        <ion-col
-          *ngIf="filterForm.get('typeOfReport')?.value === 'تفصيلي' || filterForm.get('typeOfReport')?.value === 'تجميع بالمستند'"
-        >
-        </ion-col>
-        <ion-col
-          *ngIf="filterForm.get('typeOfReport')?.value === 'تفصيلي' || filterForm.get('typeOfReport')?.value === 'تجميع بالعميل'"
-        >
-        </ion-col>
-        <ion-col
-          *ngIf="filterForm.get('typeOfReport')?.value === 'تفصيلي' || filterForm.get('typeOfReport')?.value === 'تجميع بالعميل'"
-        >
-        </ion-col>
-        <ion-col *ngIf="filterForm.get('typeOfReport')?.value === 'تفصيلي'">
-        </ion-col>
-        <ion-col *ngIf="filterForm.get('typeOfReport')?.value === 'تفصيلي'">
-        </ion-col>
-        <ion-col
-          style="min-width: 200px"
-          *ngIf="filterForm.get('typeOfReport')?.value === 'تفصيلي' || filterForm.get('typeOfReport')?.value === 'تجميع بالصنف'"
-        >
-        </ion-col>
-        <ion-col *ngIf="filterForm.get('typeOfReport')?.value === 'تفصيلي'">
-        </ion-col>
-        <ion-col *ngIf="filterForm.get('typeOfReport')?.value === 'تفصيلي'">
-        </ion-col>
-        <ion-col *ngIf="filterForm.get('typeOfReport')?.value === 'تفصيلي'">
-        <ion-col
-          *ngIf="filterForm.get('typeOfReport')?.value === 'تفصيلي' || filterForm.get('typeOfReport')?.value === 'تجميع بالمستند'"
-        >
-        </ion-col>
-        <ion-col
-          ><span
-            *ngIf="filterForm.get('typeOfReport')?.value !== 'تفصيلي' && filterForm.get('typeOfReport')?.value !== 'تجميع بالمستند'"
-            >الاجمالي</span
-          ></ion-col
-        >
-        <ion-col
-          *ngIf="filterForm.get('typeOfReport')?.value === 'تفصيلي' || filterForm.get('typeOfReport')?.value === 'تجميع بالمستند'"
-        >
-        </ion-col>
-        <ion-col
-          *ngIf="filterForm.get('typeOfReport')?.value === 'تفصيلي' || filterForm.get('typeOfReport')?.value === 'تجميع بالعميل'"
-        >
-        </ion-col>
-        <ion-col
-          *ngIf="filterForm.get('typeOfReport')?.value === 'تفصيلي' || filterForm.get('typeOfReport')?.value === 'تجميع بالعميل'"
-        >
-        </ion-col>
-        <ion-col *ngIf="filterForm.get('typeOfReport')?.value === 'تفصيلي'">
-        </ion-col>
-        <ion-col *ngIf="filterForm.get('typeOfReport')?.value === 'تفصيلي'">
-        </ion-col>
-        <ion-col
-          style="min-width: 200px"
-          *ngIf="filterForm.get('typeOfReport')?.value === 'تفصيلي' || filterForm.get('typeOfReport')?.value === 'تجميع بالصنف'"
-        >
-        </ion-col>
-        <ion-col *ngIf="filterForm.get('typeOfReport')?.value === 'تفصيلي'">
-        </ion-col>
-        <ion-col *ngIf="filterForm.get('typeOfReport')?.value === 'تفصيلي'">
-        </ion-col>
-        <ion-col *ngIf="filterForm.get('typeOfReport')?.value === 'تفصيلي'">
-          <span>{{ totalBonus | number:'1.2-2' }}</span>
-        </ion-col>
-        <ion-col *ngIf="filterForm.get('typeOfReport')?.value === 'تفصيلي'">
-        <ion-col *ngIf="filterForm.get('typeOfReport')?.value === 'تفصيلي'">
-          <span>{{ totalUnitCost | number:'1.2-2' }}</span>
-        </ion-col>
-        <ion-col *ngIf="filterForm.get('typeOfReport')?.value === 'تفصيلي'">
-        <ion-col *ngIf="filterForm.get('typeOfReport')?.value === 'تفصيلي'">
-          <span>{{ totalAllCostPrice | number:'1.2-2' }}</span>
-        </ion-col>
-        <ion-col *ngIf="filterForm.get('typeOfReport')?.value === 'تفصيلي'">
-        <ion-col *ngIf="filterForm.get('typeOfReport')?.value === 'تفصيلي'">
-          <span>{{ totalUnitPrice | number:'1.2-2' }}</span>
-        </ion-col>
-        <ion-col>
-          <span>{{ totalSellPrice | number:'1.2-2' }}</span>
-        </ion-col>
-        <ion-col>
-          <span>{{ totalSellDiscount | number:'1.2-2' }}</span>
-        </ion-col>
-      </ion-row>
-    </ion-grid>
-  </div> -->
+  <app-spinner *ngIf="loading"></app-spinner>
 
   <ion-modal
     #modal
@@ -411,6 +53,38 @@
       <ion-content class="no-padding">
         <form [formGroup]="filterForm" (ngSubmit)="filterReport()">
           <div class="options-section">
+            <h2>الأصناف</h2>
+            <mat-form-field class="width">
+              <input
+                matInput
+                aria-label="اسم الصنف"
+                [matAutocomplete]="auto"
+                [formControl]="itemsNamesCtrl"
+                required
+                [(ngModel)]="searchItemName"
+                (click)="$any($event.target).select()"
+              />
+              <mat-error *ngIf="itemsNamesCtrl.hasError"
+                >اسم الصنف مطلوب</mat-error
+              >
+              <mat-autocomplete
+                #auto="matAutocomplete"
+                (optionSelected)="onItemSelected($event)"
+              >
+                <cdk-virtual-scroll-viewport itemSize="20" class="viewport">
+                  <mat-option value="كافة الاصناف">كافة الاصناف</mat-option>
+                  <mat-option
+                    class="vscr-item"
+                    *cdkVirtualFor="let customer of filterdItemsNames | async"
+                    [value]="customer.value"
+                  >
+                    <span>{{ customer.value}}</span>
+                  </mat-option>
+                </cdk-virtual-scroll-viewport>
+              </mat-autocomplete>
+            </mat-form-field>
+          </div>
+          <div class="options-section">
             <h2>العملاء</h2>
             <div class="form">
               <mat-form-field class="width">
@@ -421,16 +95,18 @@
                   [matAutocomplete]="customerAuto"
                   [formControl]="customerNameCtrl"
                   required
+                  (click)="$any($event.target).select()"
                 />
                 <mat-error *ngIf="customerNameCtrl.hasError('required')"
                   >العميل مطلوب</mat-error
                 >
                 <mat-autocomplete #customerAuto="matAutocomplete">
+                  <mat-option value="كافة العملاء">كافة العملاء</mat-option>
                   <mat-option
                     *ngFor="let customer of filteredCustomerName | async"
                     [value]="customer.value"
                   >
-                    <span>{{ customer.key }} | {{ customer.value }}</span>
+                    <span>{{ customer.value }}</span>
                   </mat-option>
                 </mat-autocomplete>
               </mat-form-field>
@@ -447,6 +123,7 @@
                 type="text"
                 required
                 [matAutocomplete]="suppliersAuto"
+                (click)="$any($event.target).select()"
               />
               <mat-error *ngIf="suppliersCtrl.hasError('required')"
                 >الرجاء ادخال المورد</mat-error
@@ -473,6 +150,7 @@
                 [formControl]="categoriesCtrl"
                 [matAutocomplete]="categoryAuto"
                 required
+                (click)="$any($event.target).select()"
               />
               <mat-error *ngIf="categoriesCtrl.hasError('required')"
                 >الرجاء ادخال الصنف</mat-error
@@ -499,19 +177,18 @@
                 [matAutocomplete]="costCenterAuto"
                 [formControl]="costCenterCtrl"
                 required
+                (click)="$any($event.target).select()"
               />
               <mat-error *ngIf="costCenterCtrl.hasError('required')"
                 >اسم المركز مطلوب</mat-error
               >
               <mat-autocomplete #costCenterAuto="matAutocomplete">
+                <mat-option value="كافة المراكز">كافة المراكز</mat-option>
                 <mat-option
                   *ngFor="let costCenter of filterdCostCenters | async"
                   [value]="costCenter.accountName"
                 >
-                  <span
-                    >{{ costCenter.accountNumber }} | {{ costCenter.accountName
-                    }}</span
-                  >
+                  <span>{{ costCenter.accountName }}</span>
                 </mat-option>
               </mat-autocomplete>
             </mat-form-field>
@@ -573,7 +250,12 @@
             </div>
           </div>
           <div class="submit-button-container">
-            <ion-button color="primary" size="large" shape="round" type="submit"
+            <ion-button
+              color="primary"
+              size="large"
+              shape="round"
+              type="submit"
+              (click)="submit()"
               >تطبيق</ion-button
             >
           </div>

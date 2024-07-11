@@ -8,6 +8,7 @@ import { BalanceSheetPage } from './balance-sheet.page';
 import { SelectChipsModule } from '@app/components/select-chips/select-chips.module';
 import { DateInputModule } from '@app/components/date-input/date-input.module';
 import { MaterialModule } from './material.module';
+import { VirtualSCrollingTableModule } from '@app/components/virtual-scrolling-table/virtual-scrolling-table.module';
 @NgModule({
   imports: [
     CommonModule,
@@ -19,6 +20,7 @@ import { MaterialModule } from './material.module';
     SelectChipsModule,
     DateInputModule,
     MaterialModule,
+    VirtualSCrollingTableModule
   ],
   declarations: [BalanceSheetPage]
 })

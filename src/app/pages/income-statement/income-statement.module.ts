@@ -10,9 +10,7 @@ import { SpinnerModule } from 'src/app/spinner/spinner.module';
 import { IncomeStatementPage } from './income-statement.page';
 import { ReactiveFormsModule } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
-import {MatTableModule} from '@angular/material/table'
-import { MatPaginatorModule } from '@angular/material/paginator';
-import { ScrollingModule } from '@angular/cdk/scrolling';
+import { VirtualSCrollingTableModule } from '@app/components/virtual-scrolling-table/virtual-scrolling-table.module';
 @NgModule({
   imports: [
     CommonModule,
@@ -25,9 +23,7 @@ import { ScrollingModule } from '@angular/cdk/scrolling';
     SpinnerModule,
     ReactiveFormsModule,
     MatAutocompleteModule,
-    MatTableModule,
-    MatPaginatorModule,
-    ScrollingModule
+    VirtualSCrollingTableModule
   ],
   declarations: [IncomeStatementPage]
 })

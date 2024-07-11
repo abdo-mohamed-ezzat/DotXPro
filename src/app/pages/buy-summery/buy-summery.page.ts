@@ -2,17 +2,21 @@ import { CdkVirtualScrollViewport } from '@angular/cdk/scrolling';
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
+import { SharedTableDataService } from '@app/services/shared-table-data.service';
+import { ColumnDef } from '@app/viewModels/column-def';
 import { ICategory } from '@app/viewModels/icategory';
 import { ISupplier } from '@app/viewModels/isupplier';
 import { IonModal } from '@ionic/angular/common';
 import {
   Observable,
+  Subject,
   debounceTime,
   distinctUntilChanged,
   map,
   of,
   startWith,
   switchMap,
+  takeUntil,
 } from 'rxjs';
 import { APIService } from 'src/app/services/api.service';
 import { TimeService } from 'src/app/services/time.service';
@@ -21,6 +25,7 @@ import { IBuySummeryRequest } from 'src/app/viewModels/ibuy-summery-request';
 import { IChipOption } from 'src/app/viewModels/ichip-option';
 import { Iitem } from 'src/app/viewModels/iitem';
 import { IPaymentMethod } from 'src/app/viewModels/ipayment-method';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-buy-summery',
@@ -28,6 +33,98 @@ import { IPaymentMethod } from 'src/app/viewModels/ipayment-method';
   styleUrls: ['./buy-summery.page.scss'],
 })
 export class BuySummeryPage implements OnInit {
+  getColumnDefs(typeOfReport: string): ColumnDef[] {
+    const commonColumns: ColumnDef[] = [
+      {
+        displayName: 'المورد',
+        field: 'clientName',
+        visible: true,
+        hasTotal: false,
+      },
+      {
+        displayName: 'رقم الفاتورة',
+        field: 'recordNumber',
+        visible: typeOfReport === 'تفصيلي',
+        hasTotal: false,
+      },
+
+      {
+        displayName: 'الدفع',
+        field: 'theMethod',
+        visible: true,
+        hasTotal: false,
+      },
+      {
+        displayName: 'العملة',
+        field: 'currencyName',
+        visible: true,
+        hasTotal: false,
+      },
+      {
+        displayName: 'اجمالى المشتريات',
+        field: 'totalBuy',
+        visible: true,
+        hasTotal: true,
+      },
+      {
+        displayName: 'اجمالى المردود',
+        field: 'totalRedone',
+        visible: typeOfReport === 'اجمالي' || typeOfReport == 'تفصيلي',
+        hasTotal: true,
+      },
+      {
+        displayName: 'صافى المشتريات',
+        field: 'totalNet',
+        visible: true,
+        hasTotal: true,
+      },
+      // {
+      //   displayName: 'صافى المشتربات بالمقابل',
+      //   field: 'totalMcNet',
+      //   visible: true,
+      //   hasTotal: true,
+      // },
+      {
+        displayName: 'صافى الضريبة',
+        field: 'totalNetTaxValue',
+        visible: true,
+        hasTotal: true,
+      },
+      {
+        displayName: 'التاريخ',
+        field: 'theDate',
+        visible: true,
+        hasTotal: false,
+      },
+    ];
+
+    return commonColumns;
+  }
+
+  private destroy$ = new Subject<void>();
+  submit() {
+    this.tableDataService.deleteTableData();
+    this.tableDataService.setCurrentPageIndex(1);
+  }
+
+  pageSize: number = environment.PAGE_SIZE;
+  pageIndex: number = 1;
+  maxCount!: number;
+
+  onLoadMoreData() {
+    this.createRequestFilters();
+    this.loading = true;
+    this.apiService
+      .getBuySummeryReport(this.buySummeryRequest)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (res) => {
+          this.loading = false;
+          this.tableDataService.updateTableData(res);
+        },
+      });
+  }
+
   //declare page properties
   buySummeryReport!: IBuySummeryReport[];
   buySummeryRequest!: IBuySummeryRequest;
@@ -41,7 +138,6 @@ export class BuySummeryPage implements OnInit {
   totalMcNet = 0;
   totalNetTaxValue = 0;
   pageNumber: number = 1;
-  pageSize: number = 500;
   //filter items names
   typeOfReport!: string;
   itemName!: string;
@@ -65,7 +161,18 @@ export class BuySummeryPage implements OnInit {
   categoriesCtrl!: FormControl;
 
   filterForm!: FormGroup;
-  constructor(private apiService: APIService, public timeService: TimeService) {
+  constructor(
+    private apiService: APIService,
+    public timeService: TimeService,
+    private tableDataService: SharedTableDataService
+  ) {
+    this.tableDataService.setCurrentPageIndex(1);
+    this.tableDataService
+      .getCurrentPageIndex()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((pageIndex) => {
+        this.pageIndex = pageIndex;
+      });
     //initialize form
     this.filterForm = new FormGroup({
       typeOfReport: new FormControl('تفصيلي', Validators.required),
@@ -94,23 +201,21 @@ export class BuySummeryPage implements OnInit {
     this.itemsNames = [];
   }
 
-  @ViewChild(CdkVirtualScrollViewport, { static: false })
-  public viewPort!: CdkVirtualScrollViewport;
-
-  public get inverseOfTranslation(): string {
-    if (!this.viewPort) {
-      return '-0px';
-    }
-    const offset = this.viewPort.getOffsetToRenderedContentStart();
-
-    return `-${offset}px`;
-  }
-  
   ngOnInit() {
+    this.tableDataService.setColumnDefs(this.getColumnDefs('تفصيلي'));
+    this.filterForm
+      .get('typeOfReport')
+      ?.valueChanges.pipe(takeUntil(this.destroy$))
+      .subscribe((value) => {
+        this.tableDataService.setColumnDefs(this.getColumnDefs(value));
+      });
     // lists contorls
-    this.apiService.getPaymentMethod().subscribe((res) => {
-      this.paymentTypes = res;
-    });
+    this.apiService
+      .getPaymentMethod()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((res) => {
+        this.paymentTypes = res;
+      });
     this.paymentTypeCtrl = new FormControl('الكل');
     this.filteredPaymentType = this.paymentTypeCtrl.valueChanges.pipe(
       startWith(''),
@@ -121,10 +226,13 @@ export class BuySummeryPage implements OnInit {
       })
     );
 
-    this.apiService.getitemName().subscribe((res) => {
-      this.itemsNames = res;
-    });
-    this.itemsNamesCtrl = new FormControl('');
+    this.apiService
+      .getitemName()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((res) => {
+        this.itemsNames = res;
+      });
+    this.itemsNamesCtrl = new FormControl('كافة الاصناف');
     this.filterdItemsNames = this.itemsNamesCtrl.valueChanges.pipe(
       startWith(''),
       debounceTime(200),
@@ -135,11 +243,15 @@ export class BuySummeryPage implements OnInit {
     );
 
     //filter suppliers
-    this.apiService.getCustomerNames().subscribe((res) => {
-      this.suplliers = res;
-    });
+    this.apiService
+      .getCustomerNames()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((res) => {
+        this.suplliers = res;
+      });
     this.suppliersCtrl = new FormControl('كافة الموردين', Validators.required);
     this.filteredSuppliers = this.suppliersCtrl.valueChanges.pipe(
+      startWith(''),
       map((supplier) => {
         return supplier
           ? this.filterSuppliers(supplier)
@@ -148,14 +260,18 @@ export class BuySummeryPage implements OnInit {
     );
 
     //filter categories
-    this.apiService.getAllCategories().subscribe((res) => {
-      this.categories = res;
-    });
+    this.apiService
+      .getAllCategories()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((res) => {
+        this.categories = res;
+      });
     this.categoriesCtrl = new FormControl(
       'كافة المجموعات',
       Validators.required
     );
     this.filteredCategories = this.categoriesCtrl.valueChanges.pipe(
+      startWith(''),
       map((category) => {
         return category
           ? this.filterCategories(category)
@@ -201,47 +317,17 @@ export class BuySummeryPage implements OnInit {
     this.modal.present();
   }
 
-  // handle table headers
-  getColumnHeaders(): string[] {
-    if (this.filterForm.get('typeOfReport')?.value === 'اجمالي') {
-      return [
-        'المورد',
-        'التاريخ',
-        'الدفع',
-        'العملة',
-        'اجمالى المشتريات',
-        'اجمالى المردود',
-        'صافى المشتريات',
-        'صافى المشتربات بالمقابل',
-        'صافى الضريبة',
-      ];
-    } else {
-      return [
-        'المورد',
-        'التاريخ',
-        'رقم الفاتورة',
-        'الدفع',
-        'العملة',
-        'صافى مبلغ الفاتورة',
-        'صافي مبلغ المردود',
-        'صافي المشتريات',
-        'صافي المشتريات بالمقابل',
-        'صافى الضريبة',
-      ];
-    }
-  }
-
   // set emited values
-  onTypeOfItemChange(event: Event) {
-    const customEvent = event as CustomEvent;
-    this.itemType = customEvent.detail.value;
-    if (customEvent.detail.value === 'كافة الاصناف') {
-      this.filterForm.get('itemName')?.setValue('كافة الاصناف');
-      this.modal.present();
-    }
-    this.itemType = customEvent.detail.value;
-    console.log(this.itemType);
-  }
+  // onTypeOfItemChange(event: Event) {
+  //   const customEvent = event as CustomEvent;
+  //   this.itemType = customEvent.detail.value;
+  //   if (customEvent.detail.value === 'كافة الاصناف') {
+  //     this.filterForm.get('itemName')?.setValue('كافة الاصناف');
+  //     this.modal.present();
+  //   }
+  //   this.itemType = customEvent.detail.value;
+  //   console.log(this.itemType);
+  // }
   setDateOption(event: IChipOption) {
     this.filterForm.get('time')?.setValue(event.name);
     this.time = event.name;
@@ -249,17 +335,12 @@ export class BuySummeryPage implements OnInit {
   onItemSelected(event: MatAutocompleteSelectedEvent) {
     this.itemName = event.option.value;
     this.filterForm.get('itemName')?.setValue(event.option.value);
-    this.modal.present();
+    this.tableDataService.setColumnDefs(this.getColumnDefs(this.itemName));
   }
 
-  onScroll(index: number) {
-    if (index > this.buySummeryReport.length - 10) {
-      this.pageNumber++;
-      this.filterReport();
-    }
-  }
   // apply filters
-  filterReport() {
+
+  createRequestFilters() {
     let supplierValue = this.suppliersCtrl.value;
     let matchingSupplier = this.suplliers.find(
       (supplier) => supplier.value === supplierValue
@@ -271,6 +352,27 @@ export class BuySummeryPage implements OnInit {
     );
     let categoryID = matchingCategory ? matchingCategory.key : 0;
 
+    if (this.itemType == 'كافة الاصناف') {
+      this.filterForm.get('itemName')?.setValue('كافة الاصناف');
+    }
+
+    this.buySummeryRequest = {
+      PageNumber: this.pageIndex,
+      PageSize: this.pageSize,
+      TypeOfReport: this.filterForm.get('typeOfReport')?.value,
+      ItemName: this.filterForm.get('itemName')?.value,
+      SupplierID: supplierID,
+      TheMethodName: this.paymentTypeCtrl.value,
+      CategoryID: categoryID,
+      IsRedoneConnectedToBuy: this.filterForm.get('isRedoneConnectedToBuy')
+        ?.value,
+      Time: this.filterForm.get('time')?.value,
+      MinTimeValue: this.filterForm.get('minTimeValue')?.value,
+      MaxTimeValue: this.filterForm.get('maxTimeValue')?.value,
+    };
+  }
+
+  filterReport() {
     if (
       this.filterForm.invalid ||
       this.paymentTypeCtrl.invalid ||
@@ -291,42 +393,26 @@ export class BuySummeryPage implements OnInit {
 
     this.modal.dismiss();
     this.loading = true;
-    this.totalBuy = 0;
-    this.totalRedone = 0;
-    this.totalNet = 0;
-    this.totalMcNet = 0;
-    this.totalNetTaxValue = 0;
-    this.buySummeryRequest = {
-      PageNumber: this.pageNumber,
-      PageSize: this.pageSize,
-      TypeOfReport: this.filterForm.get('typeOfReport')?.value,
-      ItemName: this.filterForm.get('itemName')?.value,
-      SupplierID: supplierID,
-      TheMethodName: this.paymentTypeCtrl.value,
-      CategoryID: categoryID,
-      IsRedoneConnectedToBuy: this.filterForm.get('isRedoneConnectedToBuy')
-        ?.value,
-      Time: this.filterForm.get('time')?.value,
-      MinTimeValue: this.filterForm.get('minTimeValue')?.value,
-      MaxTimeValue: this.filterForm.get('maxTimeValue')?.value,
-    };
-
-    this.apiService.getBuySummeryReport(this.buySummeryRequest).subscribe({
-      next: (res) => {
-        this.buySummeryReport = res;
-        console.log(this.buySummeryReport);
-        this.buySummeryReport.forEach((report) => {
-          this.totalBuy += report.totalBuy;
-          this.totalRedone += report.totalRedone;
-          this.totalNet += report.totalNet;
-          this.totalMcNet += report.totalMcNet;
-          this.totalNetTaxValue += report.totalNetTaxValue;
-        });
-        this.loading = false;
-      },
-      error: (err) => {
-        this.loading = false;
-      },
-    });
+    this.createRequestFilters();
+    this.apiService
+      .getBuySummeryReport(this.buySummeryRequest)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (res) => {
+          this.buySummeryReport = res;
+          this.tableDataService.setTableData(res);
+          this.maxCount = this.apiService.getCurrentReportTotalCount;
+          this.loading = false;
+        },
+        error: (err) => {
+          this.loading = false;
+        },
+      });
+  }
+  ngOnDestroy() {
+    this.tableDataService.deleteTableColumns();
+    this.tableDataService.deleteTableData();
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 }

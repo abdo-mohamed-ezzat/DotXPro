@@ -1,12 +1,12 @@
 <ion-header [translucent]="true" class="ion-no-border" #header>
   <ion-toolbar>
-    <ion-buttons slot="start">
-      <ion-back-button></ion-back-button>
+    <ion-buttons slot="start" color="light">
+      <ion-back-button color="light"  defaultHref="/home"></ion-back-button>
     </ion-buttons>
     <ion-buttons slot="end">
       <ion-menu-toggle auto-hide="false" side="end">
         <ion-button>
-          <ion-icon name="menu"></ion-icon>
+          <ion-icon name="menu" color="light"></ion-icon>
         </ion-button>
       </ion-menu-toggle>
     </ion-buttons>
@@ -17,131 +17,29 @@
 </ion-header>
 
 <ion-content class="ion-no-padding" scroll-y="false">
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320" #svg>
-    <path
-      fill="#1d4188"
-      fill-opacity="1"
-      d="M0,256L60,218.7C120,181,240,107,360,85.3C480,64,600,96,720,138.7C840,181,960,235,1080,261.3C1200,288,1320,288,1380,288L1440,288L1440,0L1380,0C1320,0,1200,0,1080,0C960,0,840,0,720,0C600,0,480,0,360,0C240,0,120,0,60,0L0,0Z"
-    ></path>
-  </svg>
-  <ion-grid>
-    <ion-row>
-      <ion-col>
-        <ion-button id="open-modal">
-          <ion-icon name="filter-outline"></ion-icon>
-        </ion-button>
-      </ion-col>
-    </ion-row>
-  </ion-grid>
-  <div class="table-wrapper">
-    <cdk-virtual-scroll-viewport itemSize="50" class="table" #scroll (scrolledIndexChange)="onScroll($event)" style="height: 600px;">
-      <table>
-        <thead>
-          <tr>
-            <th>اسم الحساب</th>
-            <th>الرقم</th>
-            <th *ngIf="filterForm.get('showCostCenter')?.value">
-              مركز التكلفة
-            </th>
-            <th>مدين</th>
-            <th>دائن</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *cdkVirtualFor="let account of incomeStatementReport">
-            <td>{{ account.accountName }}</td>
-            <td>{{ account.accountNumber }}</td>
-            <td *ngIf="filterForm.get('showCostCenter')?.value">
-              {{ account.costCenterName }}
-            </td>
-            <td>{{ account.madeen | number:'1.2-2' }}</td>
-            <td>{{ account.dain | number:'1.2-2'}}</td>
-          </tr>
-        </tbody>
-      </table>
-    </cdk-virtual-scroll-viewport>
-    <!-- <table mat-table [dataSource]="dataSource">
-      <ng-container matColumnDef="accountName">
-        <th mat-header-cell *matHeaderCellDef>اسم الحساب</th>
-        <td mat-cell *matCellDef="let account">{{account.accountName}}</td>
-        <td mat-footer-cell *matFooterCellDef>الاجمالي</td>
-      </ng-container>
-
-      <ng-container matColumnDef="accountNumber">
-        <th mat-header-cell *matHeaderCellDef>الرقم</th>
-        <td mat-cell *matCellDef="let account">{{account.accountNumber}}</td>
-      </ng-container>
-
-      <ng-container matColumnDef="madeen">
-        <th mat-header-cell *matHeaderCellDef>مدين</th>
-        <td mat-cell *matCellDef="let account">{{account.madeen}}</td>
-        <td mat-foote-cell *matFooterCell>الاجمالي</td>
-      </ng-container>
-      
-      <ng-container matColumnDef="dain">
-        <th mat-header-cell *matHeaderCellDef>دائن</th>
-        <td mat-cell *matCellDef="let account">{{account.dain}}</td>
-        <td mat-foote-cell *matFooterCell>الاجمالي</td>
-      </ng-container>
-
-      <tr mat-header-row *matHeaderRowDef="columnToDisplay"></tr>
-      <tr mat-row *matRowDef="let row; columns: columnToDisplay"></tr>
-    </table> -->
-  </div>
-  <div class="table-wrapper">
-    <ion-grid class="table" #grid>
-      <ion-row class="table-header">
+  <div class="container">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320" #svg>
+      <path
+        fill="#1d4188"
+        fill-opacity="1"
+        d="M0,256L60,218.7C120,181,240,107,360,85.3C480,64,600,96,720,138.7C840,181,960,235,1080,261.3C1200,288,1320,288,1380,288L1440,288L1440,0L1380,0C1320,0,1200,0,1080,0C960,0,840,0,720,0C600,0,480,0,360,0C240,0,120,0,60,0L0,0Z"
+      ></path>
+    </svg>
+    <ion-grid>
+      <ion-row>
         <ion-col>
-          <span>اسم الحساب</span>
-        </ion-col>
-        <ion-col>
-          <span>الرقم</span>
-        </ion-col>
-        <ion-col *ngIf="filterForm.get('showCostCenter')?.value">
-          <span>مركز التكلفة</span>
-        </ion-col>
-        <ion-col>
-          <span>مدين</span>
-        </ion-col>
-        <ion-col>
-          <span>دائن</span>
-        </ion-col>
-      </ion-row>
-      <app-spinner *ngIf="loading"></app-spinner>
-      <ion-row class="table-row" *ngFor="let account of incomeStatementReport">
-        <ion-col>
-          <span>{{ account.accountName }}</span>
-        </ion-col>
-        <ion-col>
-          <span>{{ account.accountNumber }}</span>
-        </ion-col>
-        <ion-col *ngIf="filterForm.get('showCostCenter')?.value">
-          <span>{{ account.costCenterName }}</span>
-        </ion-col>
-        <ion-col>
-          <span>{{ account.madeen | number:'1.2-2' }}</span>
-        </ion-col>
-        <ion-col>
-          <span>{{ account.dain | number:'1.2-2'}}</span>
+          <ion-button id="open-modal">
+            <ion-icon name="filter-outline"></ion-icon>
+          </ion-button>
         </ion-col>
       </ion-row>
     </ion-grid>
+    <app-virtual-scrolling-table
+    [MAX_COUNT]="maxCount"
+    (fetchMoreData)="onLoadMoreData()"
+    ></app-virtual-scrolling-table>
   </div>
-  <ion-grid class="table-footer">
-    <ion-row>
-      <ion-col><span>الاجمالي</span></ion-col>
-      <ion-col *ngIf="filterForm.get('showCostCenter')?.value"> </ion-col>
-      <ion-col>
-        <span></span>
-      </ion-col>
-      <ion-col>
-        <span>{{totalDain | number:'1.2-2'}}</span>
-      </ion-col>
-      <ion-col>
-        <span>{{totalDain | number:'1.2-2'}}</span>
-      </ion-col>
-    </ion-row>
-  </ion-grid>
+  <app-spinner *ngIf="loading"></app-spinner>
 </ion-content>
 <ion-modal
   #modal
@@ -163,6 +61,7 @@
               formControlName="level"
               required
               [matAutocomplete]="auto"
+              (click)="$any($event.target).select()"
             />
             <mat-error *ngIf="filterForm.get('level')?.hasError('required')"
               >المستوى مطلوب</mat-error
@@ -223,7 +122,7 @@
           </div>
         </div>
         <div class="submit-button-container">
-          <ion-button color="primary" size="large" shape="round" type="submit"
+          <ion-button color="primary" size="large" shape="round" type="submit" (click)="submit()"
             >تطبيق</ion-button
           >
         </div>

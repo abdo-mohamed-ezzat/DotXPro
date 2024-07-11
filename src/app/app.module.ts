@@ -14,6 +14,7 @@ import { ErrorInterceptor } from './Interceptors/error.interceptor';
 import { JWTInterceptor } from './Interceptors/jwt.interceptor';
 import { AlertModule } from './components/alert/alert.module';
 import { AppInitService } from './services/app-init.service';
+import { ConnectivityInterceptor } from './Interceptors/connectivity.interceptor';
 
 @NgModule({
   declarations: [AppComponent],
@@ -46,6 +47,7 @@ import { AppInitService } from './services/app-init.service';
       deps: [AppInitService],
       multi: true,
     },
+    { provide: HTTP_INTERCEPTORS, useClass: ConnectivityInterceptor, multi: true },
   ],
   bootstrap: [AppComponent],
 })

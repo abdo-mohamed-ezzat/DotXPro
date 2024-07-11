@@ -1,4 +1,6 @@
 export interface ISalesProfitRequest {
+  PageSize: number;
+  PageNumber: number;
   TypeOfReport: string;
   ItemName: string;
   ClientName: string;

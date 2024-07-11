@@ -1,0 +1,74 @@
+<div class="virtaul-scrolling-container">
+  <cdk-virtual-scroll-viewport
+    #viewPort
+    [itemSize]="ITEM_SIZE"
+    class="viewport"
+    minBufferPx="800"
+    maxBufferPx="1000"
+    (scrolledIndexChange)="onScroll($event)"
+  >
+    <table #table>
+      <thead [style.top.px]="offset">
+        <tr>
+          <ng-container *ngFor="let col of columnDefs">
+            <th *ngIf="col['visible']">
+              {{ col.displayName }}
+              <ng-container *ngIf="col['hasSubHeaders']">
+                <div class="split-cell">
+                  <span *ngFor="let subHeader of col['subHeaders']">{{
+                    subHeader.displayName
+                  }}</span>
+                </div>
+              </ng-container>
+            </th>
+          </ng-container>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *cdkVirtualFor="let row of items; let i = index" class="item">
+          <ng-container *ngFor="let col of columnDefs">
+            <td *ngIf="col['visible']">
+              <ng-container *ngIf="col['hasSubHeaders']">
+                <div class="split-cell" style="direction: ltr">
+                  <span *ngFor="let subHeader of col['subHeaders']">{{
+                    row[subHeader.field] | number : "1.2-2"
+                  }}</span>
+                </div>
+              </ng-container>
+              <ng-container *ngIf="!col['hasSubHeaders']">
+                {{
+                  isDate(row[col.field])
+                    ? (row[col.field] | date : "dd/MM/yyyy")
+                    : col["hasTotal"]
+                    ? (row[col.field] | number : "1.2-2")
+                    : row[col.field]
+                }}
+              </ng-container>
+            </td>
+          </ng-container>
+        </tr>
+      </tbody>
+      <tfoot [style.bottom.px]="offset * -1">
+        <tr *ngIf="showTotal">
+          <ng-container *ngFor="let col of columnDefs">
+            <td *ngIf="col['visible']">
+              <ng-container *ngIf="col['hasTotal']">
+                <ng-container *ngIf="col['hasSubHeaders']">
+                  <div class="split-cell">
+                    <span *ngFor="let subHeader of col['subHeaders']">{{
+                      getTotal(subHeader.field) | number : "1.2-2"
+                    }}</span>
+                  </div>
+                </ng-container>
+                <ng-container *ngIf="!col['hasSubHeaders']">
+                  {{ getTotal(col.field) | number : "1.2-2" }}
+                </ng-container>
+              </ng-container>
+              <ng-container *ngIf="!col['hasTotal']"> </ng-container>
+            </td>
+          </ng-container>
+        </tr>
+      </tfoot>
+    </table>
+  </cdk-virtual-scroll-viewport>
+</div>

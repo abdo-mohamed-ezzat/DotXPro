@@ -3,4 +3,5 @@ export interface IAPIResponse<T> {
     message: string;
     data: T[];
     status: number;
+    totalCount: number;
 }
