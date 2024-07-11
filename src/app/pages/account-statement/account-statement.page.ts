@@ -132,6 +132,7 @@ export class AccountStatementPage implements OnInit {
     new MatTableDataSource<IAccountStatementReport>(
       [] as IAccountStatementReport[]
     );
+
   accounts!: IAccount[];
   filteredAccounts!: Observable<IAccount[]>;
   accountCtrl!: FormControl;
@@ -173,6 +174,7 @@ export class AccountStatementPage implements OnInit {
 
     // intialize filter options
 
+
     this.dateOptions = [
       { id: 1, name: 'خلال فترة', clicked: false },
       { id: 2, name: 'حتى يوم', clicked: true },
@@ -182,6 +184,7 @@ export class AccountStatementPage implements OnInit {
       { id: 2, name: 'ريال سعودي', clicked: false },
       { id: 3, name: 'جنيه مصري', clicked: false },
     ];
+
 
     this.loading = false;
     //lists controllers
@@ -300,6 +303,7 @@ export class AccountStatementPage implements OnInit {
       TypeOfReport:
         this.filterForm.get('typeOfReport')?.value || this.accountCtrl.value,
       Currency: this.filterForm.get('currency')?.value,
+      CostCenter: this.costCentersCtrl.value,
       CostCenter: this.costCentersCtrl.value,
       Time: this.filterForm.get('time')?.value,
       MinTimeValue: this.filterForm.get('minTimeValue')?.value,

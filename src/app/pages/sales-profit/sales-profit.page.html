@@ -12,6 +12,7 @@
     </ion-buttons>
     <ion-title class="ion-text-center header-title-align"
       >أرباح مبيعات</ion-title
+      >أرباح مبيعات</ion-title
     >
   </ion-toolbar>
 </ion-header>
@@ -99,14 +100,23 @@
       class="table"
       [ngStyle]="{'height': filterForm.get('itemName')?.value !== 'كافة الاصناف' ? 'calc(100vh - 462px)' : 'calc(100vh - 310px)',
       'width': filterForm.get('typeOfReport')?.value !== 'تفصيلي' ? '500px' : '1300px'}"
+      [ngStyle]="{'height': filterForm.get('itemName')?.value !== 'كافة الاصناف' ? 'calc(100vh - 462px)' : 'calc(100vh - 310px)',
+      'width': filterForm.get('typeOfReport')?.value !== 'تفصيلي' ? '500px' : '1300px'}"
     >
       <ion-row class="table-header">
         <ion-col
           style="min-width: 90px"
           *ngIf="filterForm.get('typeOfReport')?.value === 'تفصيلي' || filterForm.get('typeOfReport')?.value === 'تجميع بالمستند'"
         >
+        <ion-col
+          style="min-width: 90px"
+          *ngIf="filterForm.get('typeOfReport')?.value === 'تفصيلي' || filterForm.get('typeOfReport')?.value === 'تجميع بالمستند'"
+        >
           <span>التاريخ</span>
         </ion-col>
+        <ion-col
+          *ngIf="filterForm.get('typeOfReport')?.value === 'تفصيلي' || filterForm.get('typeOfReport')?.value === 'تجميع بالمستند'"
+        >
         <ion-col
           *ngIf="filterForm.get('typeOfReport')?.value === 'تفصيلي' || filterForm.get('typeOfReport')?.value === 'تجميع بالمستند'"
         >
@@ -118,8 +128,14 @@
         <ion-col
           *ngIf="filterForm.get('typeOfReport')?.value === 'تفصيلي' || filterForm.get('typeOfReport')?.value === 'تجميع بالمستند'"
         >
+        <ion-col
+          *ngIf="filterForm.get('typeOfReport')?.value === 'تفصيلي' || filterForm.get('typeOfReport')?.value === 'تجميع بالمستند'"
+        >
           <span>رقم.ف</span>
         </ion-col>
+        <ion-col
+          *ngIf="filterForm.get('typeOfReport')?.value === 'تفصيلي' || filterForm.get('typeOfReport')?.value === 'تجميع بالعميل'"
+        >
         <ion-col
           *ngIf="filterForm.get('typeOfReport')?.value === 'تفصيلي' || filterForm.get('typeOfReport')?.value === 'تجميع بالعميل'"
         >
@@ -128,11 +144,16 @@
         <ion-col
           *ngIf="filterForm.get('typeOfReport')?.value === 'تفصيلي' || filterForm.get('typeOfReport')?.value === 'تجميع بالعميل'"
         >
+        <ion-col
+          *ngIf="filterForm.get('typeOfReport')?.value === 'تفصيلي' || filterForm.get('typeOfReport')?.value === 'تجميع بالعميل'"
+        >
           <span>العميل</span>
         </ion-col>
         <ion-col *ngIf="filterForm.get('typeOfReport')?.value === 'تفصيلي'">
+        <ion-col *ngIf="filterForm.get('typeOfReport')?.value === 'تفصيلي'">
           <span>مجموعة الصنف</span>
         </ion-col>
+        <ion-col *ngIf="filterForm.get('typeOfReport')?.value === 'تفصيلي'">
         <ion-col *ngIf="filterForm.get('typeOfReport')?.value === 'تفصيلي'">
           <span>رقم الصنف</span>
         </ion-col>
@@ -140,23 +161,33 @@
           style="min-width: 200px"
           *ngIf="filterForm.get('typeOfReport')?.value === 'تفصيلي' || filterForm.get('typeOfReport')?.value === 'تجميع بالصنف'"
         >
+        <ion-col
+          style="min-width: 200px"
+          *ngIf="filterForm.get('typeOfReport')?.value === 'تفصيلي' || filterForm.get('typeOfReport')?.value === 'تجميع بالصنف'"
+        >
           <span>الصنف</span>
         </ion-col>
+        <ion-col *ngIf="filterForm.get('typeOfReport')?.value === 'تفصيلي'">
         <ion-col *ngIf="filterForm.get('typeOfReport')?.value === 'تفصيلي'">
           <span>الوحدة</span>
         </ion-col>
         <ion-col *ngIf="filterForm.get('typeOfReport')?.value === 'تفصيلي'">
+        <ion-col *ngIf="filterForm.get('typeOfReport')?.value === 'تفصيلي'">
           <span>الكمية</span>
         </ion-col>
+        <ion-col *ngIf="filterForm.get('typeOfReport')?.value === 'تفصيلي'">
         <ion-col *ngIf="filterForm.get('typeOfReport')?.value === 'تفصيلي'">
           <span>البونص</span>
         </ion-col>
         <ion-col *ngIf="filterForm.get('typeOfReport')?.value === 'تفصيلي'">
+        <ion-col *ngIf="filterForm.get('typeOfReport')?.value === 'تفصيلي'">
           <span>تكلفة الوحدة</span>
         </ion-col>
         <ion-col *ngIf="filterForm.get('typeOfReport')?.value === 'تفصيلي'">
+        <ion-col *ngIf="filterForm.get('typeOfReport')?.value === 'تفصيلي'">
           <span>اجمالي التكلفة</span>
         </ion-col>
+        <ion-col *ngIf="filterForm.get('typeOfReport')?.value === 'تفصيلي'">
         <ion-col *ngIf="filterForm.get('typeOfReport')?.value === 'تفصيلي'">
           <span>بيع الوحدة</span>
         </ion-col>
@@ -173,8 +204,15 @@
           style="min-width: 90px"
           *ngIf="filterForm.get('typeOfReport')?.value === 'تفصيلي' || filterForm.get('typeOfReport')?.value === 'تجميع بالمستند'"
         >
+        <ion-col
+          style="min-width: 90px"
+          *ngIf="filterForm.get('typeOfReport')?.value === 'تفصيلي' || filterForm.get('typeOfReport')?.value === 'تجميع بالمستند'"
+        >
           <span>{{ report.theDate | date:'MM/dd/yyyy' }}</span>
         </ion-col>
+        <ion-col
+          *ngIf="filterForm.get('typeOfReport')?.value === 'تفصيلي' || filterForm.get('typeOfReport')?.value === 'تجميع بالمستند'"
+        >
         <ion-col
           *ngIf="filterForm.get('typeOfReport')?.value === 'تفصيلي' || filterForm.get('typeOfReport')?.value === 'تجميع بالمستند'"
         >
@@ -186,8 +224,14 @@
         <ion-col
           *ngIf="filterForm.get('typeOfReport')?.value === 'تفصيلي' || filterForm.get('typeOfReport')?.value === 'تجميع بالمستند'"
         >
+        <ion-col
+          *ngIf="filterForm.get('typeOfReport')?.value === 'تفصيلي' || filterForm.get('typeOfReport')?.value === 'تجميع بالمستند'"
+        >
           <span>{{ report.recordNumber }}</span>
         </ion-col>
+        <ion-col
+          *ngIf="filterForm.get('typeOfReport')?.value === 'تفصيلي' || filterForm.get('typeOfReport')?.value === 'تجميع بالعميل'"
+        >
         <ion-col
           *ngIf="filterForm.get('typeOfReport')?.value === 'تفصيلي' || filterForm.get('typeOfReport')?.value === 'تجميع بالعميل'"
         >
@@ -196,11 +240,16 @@
         <ion-col
           *ngIf="filterForm.get('typeOfReport')?.value === 'تفصيلي' || filterForm.get('typeOfReport')?.value === 'تجميع بالعميل'"
         >
+        <ion-col
+          *ngIf="filterForm.get('typeOfReport')?.value === 'تفصيلي' || filterForm.get('typeOfReport')?.value === 'تجميع بالعميل'"
+        >
           <span>{{ report.clientName }}</span>
         </ion-col>
         <ion-col *ngIf="filterForm.get('typeOfReport')?.value === 'تفصيلي'">
+        <ion-col *ngIf="filterForm.get('typeOfReport')?.value === 'تفصيلي'">
           <span>{{ report.categoryName }}</span>
         </ion-col>
+        <ion-col *ngIf="filterForm.get('typeOfReport')?.value === 'تفصيلي'">
         <ion-col *ngIf="filterForm.get('typeOfReport')?.value === 'تفصيلي'">
           <span>{{ report.itemNumber }}</span>
         </ion-col>
@@ -208,23 +257,33 @@
           style="min-width: 200px"
           *ngIf="filterForm.get('typeOfReport')?.value === 'تفصيلي' || filterForm.get('typeOfReport')?.value === 'تجميع بالصنف'"
         >
+        <ion-col
+          style="min-width: 200px"
+          *ngIf="filterForm.get('typeOfReport')?.value === 'تفصيلي' || filterForm.get('typeOfReport')?.value === 'تجميع بالصنف'"
+        >
           <span>{{ report.itemName }}</span>
         </ion-col>
+        <ion-col *ngIf="filterForm.get('typeOfReport')?.value === 'تفصيلي'">
         <ion-col *ngIf="filterForm.get('typeOfReport')?.value === 'تفصيلي'">
           <span>{{ report.unitName }}</span>
         </ion-col>
         <ion-col *ngIf="filterForm.get('typeOfReport')?.value === 'تفصيلي'">
+        <ion-col *ngIf="filterForm.get('typeOfReport')?.value === 'تفصيلي'">
           <span>{{ report.saleQuantity }}</span>
         </ion-col>
+        <ion-col *ngIf="filterForm.get('typeOfReport')?.value === 'تفصيلي'">
         <ion-col *ngIf="filterForm.get('typeOfReport')?.value === 'تفصيلي'">
           <span>{{ report.bonus | number: '1.2-2'}}</span>
         </ion-col>
         <ion-col *ngIf="filterForm.get('typeOfReport')?.value === 'تفصيلي'">
+        <ion-col *ngIf="filterForm.get('typeOfReport')?.value === 'تفصيلي'">
           <span>{{ report.unitCost | number: '1.2-2'}}</span>
         </ion-col>
         <ion-col *ngIf="filterForm.get('typeOfReport')?.value === 'تفصيلي'">
+        <ion-col *ngIf="filterForm.get('typeOfReport')?.value === 'تفصيلي'">
           <span>{{ report.allCostPrice | number: '1.2-2'}}</span>
         </ion-col>
+        <ion-col *ngIf="filterForm.get('typeOfReport')?.value === 'تفصيلي'">
         <ion-col *ngIf="filterForm.get('typeOfReport')?.value === 'تفصيلي'">
           <span>{{ report.unitPrice | number: '1.2-2' }}</span>
         </ion-col>
@@ -236,6 +295,10 @@
         </ion-col>
       </ion-row>
       <ion-row class="table-footer">
+        <ion-col
+          style="min-width: 90px"
+          *ngIf="filterForm.get('typeOfReport')?.value === 'تفصيلي' || filterForm.get('typeOfReport')?.value === 'تجميع بالمستند'"
+        >
         <ion-col
           style="min-width: 90px"
           *ngIf="filterForm.get('typeOfReport')?.value === 'تفصيلي' || filterForm.get('typeOfReport')?.value === 'تجميع بالمستند'"
@@ -278,14 +341,53 @@
         <ion-col *ngIf="filterForm.get('typeOfReport')?.value === 'تفصيلي'">
         </ion-col>
         <ion-col *ngIf="filterForm.get('typeOfReport')?.value === 'تفصيلي'">
+        <ion-col
+          *ngIf="filterForm.get('typeOfReport')?.value === 'تفصيلي' || filterForm.get('typeOfReport')?.value === 'تجميع بالمستند'"
+        >
+        </ion-col>
+        <ion-col
+          ><span
+            *ngIf="filterForm.get('typeOfReport')?.value !== 'تفصيلي' && filterForm.get('typeOfReport')?.value !== 'تجميع بالمستند'"
+            >الاجمالي</span
+          ></ion-col
+        >
+        <ion-col
+          *ngIf="filterForm.get('typeOfReport')?.value === 'تفصيلي' || filterForm.get('typeOfReport')?.value === 'تجميع بالمستند'"
+        >
+        </ion-col>
+        <ion-col
+          *ngIf="filterForm.get('typeOfReport')?.value === 'تفصيلي' || filterForm.get('typeOfReport')?.value === 'تجميع بالعميل'"
+        >
+        </ion-col>
+        <ion-col
+          *ngIf="filterForm.get('typeOfReport')?.value === 'تفصيلي' || filterForm.get('typeOfReport')?.value === 'تجميع بالعميل'"
+        >
+        </ion-col>
+        <ion-col *ngIf="filterForm.get('typeOfReport')?.value === 'تفصيلي'">
+        </ion-col>
+        <ion-col *ngIf="filterForm.get('typeOfReport')?.value === 'تفصيلي'">
+        </ion-col>
+        <ion-col
+          style="min-width: 200px"
+          *ngIf="filterForm.get('typeOfReport')?.value === 'تفصيلي' || filterForm.get('typeOfReport')?.value === 'تجميع بالصنف'"
+        >
+        </ion-col>
+        <ion-col *ngIf="filterForm.get('typeOfReport')?.value === 'تفصيلي'">
+        </ion-col>
+        <ion-col *ngIf="filterForm.get('typeOfReport')?.value === 'تفصيلي'">
+        </ion-col>
+        <ion-col *ngIf="filterForm.get('typeOfReport')?.value === 'تفصيلي'">
           <span>{{ totalBonus | number:'1.2-2' }}</span>
         </ion-col>
+        <ion-col *ngIf="filterForm.get('typeOfReport')?.value === 'تفصيلي'">
         <ion-col *ngIf="filterForm.get('typeOfReport')?.value === 'تفصيلي'">
           <span>{{ totalUnitCost | number:'1.2-2' }}</span>
         </ion-col>
         <ion-col *ngIf="filterForm.get('typeOfReport')?.value === 'تفصيلي'">
+        <ion-col *ngIf="filterForm.get('typeOfReport')?.value === 'تفصيلي'">
           <span>{{ totalAllCostPrice | number:'1.2-2' }}</span>
         </ion-col>
+        <ion-col *ngIf="filterForm.get('typeOfReport')?.value === 'تفصيلي'">
         <ion-col *ngIf="filterForm.get('typeOfReport')?.value === 'تفصيلي'">
           <span>{{ totalUnitPrice | number:'1.2-2' }}</span>
         </ion-col>
